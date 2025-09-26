@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان اللغة الإنجليزية الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-6">
+    <div id="quiz-container" class="bg-white rounded-3xl shadow-xl p-8 max-w-3xl w-full">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
+            امتحان اللغة الإنجليزية
+            <span id="question-counter" class="text-sm font-normal text-gray-500"></span>
+        </h1>
+
+        <!-- Question and options will be rendered here -->
+        <div id="question-area" class="space-y-4"></div>
+
+        <!-- Feedback and control buttons -->
+        <div id="feedback-area" class="mt-6 hidden">
+            <div id="feedback-box" class="p-4 rounded-lg text-center font-semibold"></div>
+            <div class="mt-4 flex justify-center space-x-4">
+                <button id="next-button"
+                    class="bg-blue-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-700 transition duration-300">السؤال
+                    التالي</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizContainer = document.getElementById('quiz-container');
+            const questionArea = document.getElementById('question-area');
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackBox = document.getElementById('feedback-box');
+            const nextButton = document.getElementById('next-button');
+            const questionCounter = document.getElementById('question-counter');
+
+            const quizData = {
+                "questions": [
+                    {
+                        "question": "In the following sentences, certain words are inside brackets, choose which is wrong. Ex: The festival is (traditional) held in May (not exact sentence in the exam)",
+                        "answerOptions": [
+                            { "text": "tradition", "rationale": "This is a noun, not an adverb. It does not correctly modify the verb 'held'.", "isCorrect": false },
+                            { "text": "traditionally", "rationale": "The word 'traditionally' is an adverb that correctly modifies the verb 'held'.", "isCorrect": true },
+                            { "text": "traditional", "rationale": "This is an adjective, and it does not correctly modify the verb 'held'.", "isCorrect": false },
+                            { "text": "traditions", "rationale": "This is a plural noun and does not correctly modify the verb 'held'.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the part of speech that describes how an action is performed."
+                    },
+                    {
+                        "question": "There were 20 questions on the test, the student managed to answer 11, 3 of which are wrong. How many questions did he fail to answer?",
+                        "answerOptions": [
+                            { "text": "He failed to answer 3 questions", "rationale": "This is the number of incorrect answers, not the number of unanswered questions.", "isCorrect": false },
+                            { "text": "He failed to answer 9 questions", "rationale": "The number of questions he failed to answer is the total number of questions (20) minus the number he answered (11), which is 9.", "isCorrect": true },
+                            { "text": "He failed to answer 12 questions", "rationale": "This number is the sum of unanswered questions and incorrect answers, which is not what the question asks for.", "isCorrect": false },
+                            { "text": "He failed to answer 11 questions", "rationale": "This is the number of questions he answered, not the number he failed to answer.", "isCorrect": false }
+                        ],
+                        "hint": "Focus on the total number of questions and the number of questions answered."
+                    },
+                    {
+                        "question": "The festival is (traditional) held in May.",
+                        "answerOptions": [
+                            { "text": "traditionally", "rationale": "This adverb correctly modifies the verb 'held'.", "isCorrect": true },
+                            { "text": "traditional", "rationale": "This is an adjective, which is used to describe nouns.", "isCorrect": false },
+                            { "text": "tradition", "rationale": "This is a noun, not an adverb.", "isCorrect": false },
+                            { "text": "traditions", "rationale": "This is a plural noun and does not fit grammatically.", "isCorrect": false }
+                        ],
+                        "hint": "Adverbs often end in '-ly' and describe verbs."
+                    },
+                    {
+                        "question": "(.......) are less populated than cities. (.....) have less dense populations than cities.",
+                        "answerOptions": [
+                            { "text": "megacities", "rationale": "Megacities are large, densely populated urban areas.", "isCorrect": false },
+                            { "text": "metropolitan", "rationale": "Metropolitan areas are densely populated, consisting of a city and its surrounding suburbs.", "isCorrect": false },
+                            { "text": "slums", "rationale": "Slums are densely populated urban settlements with poor living conditions.", "isCorrect": false },
+                            { "text": "villages", "rationale": "Villages are small settlements that are less populated and have less dense populations than cities.", "isCorrect": true }
+                        ],
+                        "hint": "Think about the size and population density of different types of settlements."
+                    },
+                    {
+                        "question": "The food which people eat is (converted) into energy. Converted is closest in meaning to?",
+                        "answerOptions": [
+                            { "text": "reveled", "rationale": "Reveled means to celebrate or enjoy.", "isCorrect": false },
+                            { "text": "completed", "rationale": "Completed means finished.", "isCorrect": false },
+                            { "text": "introduced", "rationale": "Introduced means to present something new.", "isCorrect": false },
+                            { "text": "transformed", "rationale": "Converted means to change from one form to another, which is a synonym for 'transformed'.", "isCorrect": true }
+                        ],
+                        "hint": "Look for a word that means 'to change' or 'to alter'."
+                    },
+                    {
+                        "question": "The teacher gives us (judgment) for this subject. Judgement is closest in meaning to?",
+                        "answerOptions": [
+                            { "text": "statement", "rationale": "A statement is an official declaration.", "isCorrect": false },
+                            { "text": "assist", "rationale": "Assist means to help.", "isCorrect": false },
+                            { "text": "make over", "rationale": "Make over means to change the appearance of something.", "isCorrect": false },
+                            { "text": "analysis", "rationale": "A judgment, in this context, is an evaluation or a detailed examination, which is synonymous with 'analysis'.", "isCorrect": true }
+                        ],
+                        "hint": "Consider the word that means a careful examination or evaluation."
+                    },
+                    {
+                        "question": "(......) low rainfall, they've been trying to improve the quality of agriculture.",
+                        "answerOptions": [
+                            { "text": "Despite of", "rationale": "This expression is grammatically incorrect. The correct form is 'Despite' without 'of'.", "isCorrect": false },
+                            { "text": "In spite of", "rationale": "This is the correct phrase to use before a noun phrase to show a contrast.", "isCorrect": true },
+                            { "text": "Because", "rationale": "Because introduces a reason, not a contrast.", "isCorrect": false },
+                            { "text": "Although", "rationale": "Although is a conjunction and must be followed by a full clause (subject and verb).", "isCorrect": false }
+                        ],
+                        "hint": "Think about which prepositional phrase means 'even though' and is followed by a noun or gerund."
+                    },
+                    {
+                        "question": "Woman: Didn't you go to the meeting, either?\nMan: No, I had a headache. Which of the following is true?",
+                        "answerOptions": [
+                            { "text": "Neither the man nor the woman attended the meeting.", "rationale": "The woman's use of 'either' implies she did not go, and the man's 'No' confirms he did not go either.", "isCorrect": true },
+                            { "text": "Man attended, woman didn't.", "rationale": "The man's answer 'No' indicates he did not attend.", "isCorrect": false },
+                            { "text": "Woman attended, man didn't.", "rationale": "The woman's question with 'either' implies she did not attend.", "isCorrect": false },
+                            { "text": "Both did.", "rationale": "Both the man and the woman's statements indicate they did not attend the meeting.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'either' is key to understanding the woman's situation."
+                    },
+                    {
+                        "question": "I studied........I failed.",
+                        "answerOptions": [
+                            { "text": "yet", "rationale": "'Yet' is a conjunction, but it needs a comma before it when connecting two independent clauses.", "isCorrect": false },
+                            { "text": ",yet", "rationale": "This is the correct way to use 'yet' as a conjunction to show a contrast between two independent clauses.", "isCorrect": true },
+                            { "text": "so", "rationale": "'So' is used to show a result, not a contrast.", "isCorrect": false },
+                            { "text": ",so", "rationale": "'So' indicates a result, which doesn't fit the logical contrast of the sentence.", "isCorrect": false }
+                        ],
+                        "hint": "Punctuation is important when connecting two complete thoughts with a conjunction."
+                    },
+                    {
+                        "question": "Ahmad let Sama............ the photo.",
+                        "answerOptions": [
+                            { "text": "See", "rationale": "The verb 'let' is a causative verb, and it is followed by the base form of the main verb without 'to'.", "isCorrect": true },
+                            { "text": "sees", "rationale": "The verb 'sees' is the third-person singular present form and does not follow 'let'.", "isCorrect": false },
+                            { "text": "to see", "rationale": "The verb 'let' does not require 'to' before the main verb.", "isCorrect": false },
+                            { "text": "saw", "rationale": "The verb 'saw' is the past tense form and does not follow 'let'.", "isCorrect": false }
+                        ],
+                        "hint": "Causative verbs like 'let' have a specific grammatical structure."
+                    },
+                    {
+                        "question": "The man is known by the (companies) he keeps.",
+                        "answerOptions": [
+                            { "text": "Organizations", "rationale": "In this context, 'companies' does not refer to a business organization.", "isCorrect": false },
+                            { "text": "Friends", "rationale": "The phrase 'the company he keeps' is an idiom meaning the people he associates with or his friends.", "isCorrect": true },
+                            { "text": "Views", "rationale": "'Views' means opinions or beliefs.", "isCorrect": false },
+                            { "text": "Books", "rationale": "This is a distractor; 'company' here does not mean 'books'.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'company' has a different meaning in this common idiom."
+                    },
+                    {
+                        "question": "The pair of scissors.........in the drawer",
+                        "answerOptions": [
+                            { "text": "Is", "rationale": "Although 'scissors' is a plural noun, the subject of the sentence is 'the pair', which is singular.", "isCorrect": true },
+                            { "text": "are", "rationale": "'Are' is used for plural subjects. The subject 'pair' is singular.", "isCorrect": false },
+                            { "text": "have been", "rationale": "This is a plural verb in the present perfect tense and does not match the singular subject 'pair'.", "isCorrect": false },
+                            { "text": "were", "rationale": "This is a plural verb in the past tense and does not match the singular subject 'pair'.", "isCorrect": false }
+                        ],
+                        "hint": "Pay close attention to the actual subject of the sentence: 'a pair'."
+                    },
+                    {
+                        "question": "I was feeling very tired, so I went to bed very early.",
+                        "answerOptions": [
+                            { "text": "then", "rationale": "'Then' shows a sequence of events, but 'so' is better for showing cause and effect.", "isCorrect": false },
+                            { "text": "and", "rationale": "'And' connects two events but does not clearly show the cause and effect relationship.", "isCorrect": false },
+                            { "text": "so", "rationale": "'So' is the correct conjunction here as it shows that feeling tired was the reason for going to bed early.", "isCorrect": true },
+                            { "text": "because", "rationale": "'Because' would be used if the sentence was structured differently, e.g. 'I went to bed early because I was tired.'", "isCorrect": false }
+                        ],
+                        "hint": "The first part of the sentence is the cause, and the second is the result."
+                    },
+                    {
+                        "question": "I'd like to know how people feel....... the new plans.",
+                        "answerOptions": [
+                            { "text": "about", "rationale": "'Feel about' is the correct phrase to express an opinion or attitude towards something.", "isCorrect": true },
+                            { "text": "for", "rationale": "'Feel for' means to have sympathy for someone, which doesn't fit the context.", "isCorrect": false },
+                            { "text": "of", "rationale": "This preposition is not used in this context.", "isCorrect": false },
+                            { "text": "with", "rationale": "This preposition is not the correct choice for this phrase.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the preposition that follows 'feel' when asking for an opinion."
+                    },
+                    {
+                        "question": "My sister was really ..... of the dark as a small child.",
+                        "answerOptions": [
+                            { "text": "nervous", "rationale": "'Nervous' implies anxiety, but 'scared' is the more direct word for a phobia or fear.", "isCorrect": false },
+                            { "text": "surprised", "rationale": "'Surprised' means to be caught unaware, which doesn't fit the context.", "isCorrect": false },
+                            { "text": "scared", "rationale": "The word 'scared' means frightened or afraid, which is the correct word to describe a fear of the dark.", "isCorrect": true },
+                            { "text": "frightened", "rationale": "While 'frightened' is a synonym, 'scared' is the option provided.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'of the dark' is a strong clue for the type of feeling being described."
+                    },
+                    {
+                        "question": "There are no lessons ......... Friday afternoon.",
+                        "answerOptions": [
+                            { "text": "at", "rationale": "'At' is used for a specific time, like 'at 3 pm'.", "isCorrect": false },
+                            { "text": "in", "rationale": "'In' is used for months, years, or longer periods, like 'in January'.", "isCorrect": false },
+                            { "text": "on", "rationale": "'On' is the correct preposition for days of the week, like 'on Friday'.", "isCorrect": true },
+                            { "text": "during", "rationale": "'During' is used to indicate a period of time, but 'on' is more specific for a day of the week.", "isCorrect": false }
+                        ],
+                        "hint": "Remember the prepositions used for days, months, and specific times."
+                    },
+                    {
+                        "question": "The shop opened 1998.",
+                        "answerOptions": [
+                            { "text": "at", "rationale": "'At' is used for specific times.", "isCorrect": false },
+                            { "text": "in", "rationale": "'In' is the correct preposition to use for years.", "isCorrect": true },
+                            { "text": "on", "rationale": "'On' is used for days and specific dates.", "isCorrect": false },
+                            { "text": "by", "rationale": "This preposition is not used here.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about prepositions of time. Think about the correct preposition for a year."
+                    },
+                    {
+                        "question": "The lesson a few minutes late.",
+                        "answerOptions": [
+                            { "text": "begin", "rationale": "'Begin' is the base form and is incorrect for the past tense.", "isCorrect": false },
+                            { "text": "begun", "rationale": "'Begun' is the past participle and needs an auxiliary verb like 'has' or 'had'.", "isCorrect": false },
+                            { "text": "began", "rationale": "'Began' is the simple past tense of 'begin', which is correct here.", "isCorrect": true },
+                            { "text": "starting", "rationale": "This form requires an auxiliary verb like 'is' or 'was'.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'a few minutes late' suggests a past action."
+                    },
+                    {
+                        "question": "People ....... using mobile phones 100 years ago.",
+                        "answerOptions": [
+                            { "text": "start", "rationale": "'Start' is the present tense.", "isCorrect": false },
+                            { "text": "starts", "rationale": "'Starts' is the third-person singular present tense.", "isCorrect": false },
+                            { "text": "started", "rationale": "The phrase '100 years ago' indicates a past action, so the simple past tense 'started' is correct.", "isCorrect": true },
+                            { "text": "starting", "rationale": "This form requires an auxiliary verb and does not fit the context.", "isCorrect": false }
+                        ],
+                        "hint": "The time phrase '100 years ago' is the key to choosing the correct tense."
+                    },
+                    {
+                        "question": "The first color TVs very expensive.",
+                        "answerOptions": [
+                            { "text": "were", "rationale": "The subject 'TVs' is plural, so the plural past tense verb 'were' is correct.", "isCorrect": true },
+                            { "text": "was", "rationale": "'Was' is used for a singular subject, but 'TVs' is plural.", "isCorrect": false },
+                            { "text": "had", "rationale": "'Had' is used for the past perfect tense and does not fit this context.", "isCorrect": false },
+                            { "text": "have", "rationale": "'Have' is a present tense verb and is not correct for this context.", "isCorrect": false }
+                        ],
+                        "hint": "Match the verb to the plural subject 'TVs'."
+                    },
+                    {
+                        "question": "Color TV to Europe in the 1990s.",
+                        "answerOptions": [
+                            { "text": "come", "rationale": "'Come' is the base form of the verb and is incorrect here.", "isCorrect": false },
+                            { "text": "comes", "rationale": "'Comes' is the third-person singular present form.", "isCorrect": false },
+                            { "text": "came", "rationale": "The past tense 'came' is correct because the phrase 'in the 1990s' indicates a past action.", "isCorrect": true },
+                            { "text": "is coming", "rationale": "This is present continuous, which does not fit the past time reference.", "isCorrect": false }
+                        ],
+                        "hint": "The time phrase 'in the 1990s' is a strong indicator of the correct tense."
+                    },
+                    {
+                        "question": "I saw him Yesterday.",
+                        "answerOptions": [
+                            { "text": "X", "rationale": "The word 'Yesterday' is a common adverb of time and does not need a preposition or article.", "isCorrect": true },
+                            { "text": "the", "rationale": "An article like 'the' is not used before 'Yesterday'.", "isCorrect": false },
+                            { "text": "in the", "rationale": "This prepositional phrase is incorrect with 'Yesterday'.", "isCorrect": false },
+                            { "text": "at", "rationale": "'At' is used for specific times of day, not a full day.", "isCorrect": false }
+                        ],
+                        "hint": "Think about how we use adverbs of time like 'yesterday' and 'today'."
+                    },
+                    {
+                        "question": "The correct answer to use 'often' is:",
+                        "answerOptions": [
+                            { "text": "I cook often meals for my friends", "rationale": "The adverb 'often' is typically placed before the main verb.", "isCorrect": false },
+                            { "text": "I often cook meals for my friends", "rationale": "The adverb of frequency 'often' is correctly placed before the main verb 'cook'.", "isCorrect": true },
+                            { "text": "Often, I cook meals for my friends", "rationale": "While this is possible, it is less common and places emphasis on 'often'. The more standard position is before the verb.", "isCorrect": false },
+                            { "text": "I cook meals often for my friends", "rationale": "The position of the adverb here is not standard.", "isCorrect": false }
+                        ],
+                        "hint": "Adverbs of frequency usually go before the main verb."
+                    },
+                    {
+                        "question": "Terri lives in a small apartment in the center of the town.",
+                        "answerOptions": [
+                            { "text": "live", "rationale": "The subject 'Terri' is third-person singular, so the verb needs to end in -s.", "isCorrect": false },
+                            { "text": "lives", "rationale": "The verb 'lives' is the correct third-person singular form for the present tense.", "isCorrect": true },
+                            { "text": "lived", "rationale": "'Lived' is the past tense. The sentence is in the present tense.", "isCorrect": false },
+                            { "text": "is living", "rationale": "This is the present continuous tense, which implies a temporary action, whereas the sentence implies a permanent residence.", "isCorrect": false }
+                        ],
+                        "hint": "Remember the rule of 's' for third-person singular subjects in the present tense."
+                    },
+                    {
+                        "question": "'At about 10 am', the best correct answer is:",
+                        "answerOptions": [
+                            { "text": "What time does she finish work?", "rationale": "This question correctly asks for a specific time and uses the correct tense and subject-verb agreement.", "isCorrect": true },
+                            { "text": "When time does she finish work?", "rationale": "'When time' is not a correct phrase. The correct phrase is 'What time'.", "isCorrect": false },
+                            { "text": "How often she finishes work?", "rationale": "This question is grammatically incorrect and asks about frequency, not a specific time.", "isCorrect": false },
+                            { "text": "At what time she finishes work?", "rationale": "This is grammatically incorrect as it is missing the auxiliary verb 'does'.", "isCorrect": false }
+                        ],
+                        "hint": "The answer 'At about 10 am' refers to a specific time."
+                    },
+                    {
+                        "question": "Change the subject 'I' to 'She' in this sentence: I live in Jordan.",
+                        "answerOptions": [
+                            { "text": "She live in Jordan", "rationale": "The verb 'live' should be 'lives' for the subject 'She'.", "isCorrect": false },
+                            { "text": "She lives in Jordan", "rationale": "This is the correct present tense form for the third-person singular subject 'She'.", "isCorrect": true },
+                            { "text": "She has lived in Jordan", "rationale": "This is a different tense (present perfect) and changes the meaning.", "isCorrect": false },
+                            { "text": "She living in Jordan", "rationale": "This is not a grammatically complete sentence.", "isCorrect": false }
+                        ],
+                        "hint": "The verb must agree with the new subject 'She'."
+                    },
+                    {
+                        "question": "My brother lives in the town center. The negative form to this sentence is:",
+                        "answerOptions": [
+                            { "text": "My brother don't live in the town center", "rationale": "'Don't' is used with 'I', 'we', 'you', and 'they'. For 'my brother' (he), we use 'doesn't'.", "isCorrect": false },
+                            { "text": "My brother don't lives in the town center", "rationale": "This is grammatically incorrect. When using 'doesn't', the main verb should be in its base form ('live').", "isCorrect": false },
+                            { "text": "My brother has not lived in the town center", "rationale": "This is a different tense (present perfect) and does not represent a simple negative form.", "isCorrect": false },
+                            { "text": "My brother doesn't live in the town center", "rationale": "This is the correct negative form. 'Doesn't' is used for the third-person singular subject, and the verb is in its base form.", "isCorrect": true }
+                        ],
+                        "hint": "Remember the auxiliary verb used for the negative form of third-person singular subjects."
+                    },
+                    {
+                        "question": "... did you get here today? Walking.",
+                        "answerOptions": [
+                            { "text": "why", "rationale": "'Why' asks for a reason, but the answer 'Walking' describes the method.", "isCorrect": false },
+                            { "text": "who", "rationale": "'Who' asks for a person.", "isCorrect": false },
+                            { "text": "how", "rationale": "'How' asks for the method or manner, which fits the answer 'Walking'.", "isCorrect": true },
+                            { "text": "when", "rationale": "'When' asks for a time.", "isCorrect": false }
+                        ],
+                        "hint": "The answer describes the mode of transportation."
+                    },
+                    {
+                        "question": "... is that young woman?",
+                        "answerOptions": [
+                            { "text": "who", "rationale": "'Who' is the correct question word to ask about a person.", "isCorrect": true },
+                            { "text": "how", "rationale": "'How' asks about manner or condition.", "isCorrect": false },
+                            { "text": "what", "rationale": "'What' asks about a thing or a general concept.", "isCorrect": false },
+                            { "text": "when", "rationale": "'When' asks about time.", "isCorrect": false }
+                        ],
+                        "hint": "You're asking to identify a person."
+                    },
+                    {
+                        "question": "I come to school by bus. The correct question is:",
+                        "answerOptions": [
+                            { "text": "How often do you come to school?", "rationale": "'How often' asks about frequency.", "isCorrect": false },
+                            { "text": "How do you come to school?", "rationale": "This is the correct question asking about the mode of transportation.", "isCorrect": true },
+                            { "text": "How long do you come to school?", "rationale": "'How long' asks about duration.", "isCorrect": false },
+                            { "text": "Why do you come to school?", "rationale": "'Why' asks for a reason.", "isCorrect": false }
+                        ],
+                        "hint": "The answer 'by bus' describes the method of travel."
+                    },
+                    {
+                        "question": "Did you me on TV yesterday?",
+                        "answerOptions": [
+                            { "text": "see", "rationale": "After the auxiliary verb 'did', the main verb must be in its base form, which is 'see'.", "isCorrect": true },
+                            { "text": "saw", "rationale": "'Saw' is the past tense form, which is not used after 'did'.", "isCorrect": false },
+                            { "text": "watched", "rationale": "'Watched' is past tense and is not in its base form.", "isCorrect": false },
+                            { "text": "told", "rationale": "'Told' is a different verb with a different meaning and is not in its base form.", "isCorrect": false }
+                        ],
+                        "hint": "The rule is that 'did' is always followed by the base form of the verb."
+                    },
+                    {
+                        "question": "All these sentences are right except one:",
+                        "answerOptions": [
+                            { "text": "I have done my work already", "rationale": "This sentence is grammatically correct. 'Already' is used with the present perfect tense.", "isCorrect": false },
+                            { "text": "It has been raining for 6 hours", "rationale": "This sentence is correct. The present perfect continuous tense is used for an action that started in the past and continues to the present.", "isCorrect": false },
+                            { "text": "She has already have her dinner", "rationale": "This sentence is incorrect. The verb after 'has' should be the past participle form 'had', not 'have'.", "isCorrect": true },
+                            { "text": "I have done my work already", "rationale": "This sentence is grammatically correct.", "isCorrect": false }
+                        ],
+                        "hint": "Check the tense and verb form in each sentence carefully."
+                    },
+                    {
+                        "question": "The teacher his students next Monday.",
+                        "answerOptions": [
+                            { "text": "will see", "rationale": "The phrase 'next Monday' indicates a future action, so 'will see' is the correct future tense.", "isCorrect": true },
+                            { "text": "have seen", "rationale": "This is the present perfect tense, which is incorrect for a future action.", "isCorrect": false },
+                            { "text": "saw", "rationale": "'Saw' is the past tense, which is incorrect for a future action.", "isCorrect": false },
+                            { "text": "see", "rationale": "'See' is the present tense and does not fit the future time reference.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'next Monday' is the key to identifying the correct tense."
+                    },
+                    {
+                        "question": "I how to solve this problem now.",
+                        "answerOptions": [
+                            { "text": "am knowing", "rationale": "The verb 'know' is a stative verb and is not typically used in the continuous tense.", "isCorrect": false },
+                            { "text": "Know", "rationale": "'Know' is the correct present simple form for this sentence.", "isCorrect": true },
+                            { "text": "Knew", "rationale": "'Knew' is the past tense and does not fit with the word 'now'.", "isCorrect": false },
+                            { "text": "Knowing", "rationale": "This is a gerund or present participle and cannot stand alone as the main verb.", "isCorrect": false }
+                        ],
+                        "hint": "Certain verbs, known as stative verbs, are not used in continuous tenses."
+                    },
+                    {
+                        "question": "She is at the moment.",
+                        "answerOptions": [
+                            { "text": "Smoke", "rationale": "This is the base form and does not follow 'is'.", "isCorrect": false },
+                            { "text": "Smoked", "rationale": "This is the past tense or past participle.", "isCorrect": false },
+                            { "text": "Eat", "rationale": "This verb does not fit the context.", "isCorrect": false },
+                            { "text": "Smoking", "rationale": "The phrase 'at the moment' indicates a present continuous action, so the '-ing' form 'smoking' is correct.", "isCorrect": true }
+                        ],
+                        "hint": "The phrase 'at the moment' is a clear signal for a continuous tense."
+                    },
+                    {
+                        "question": "I rice and bread.",
+                        "answerOptions": [
+                            { "text": "Rarely eat", "rationale": "The adverb 'rarely' is correctly placed before the main verb 'eat'.", "isCorrect": true },
+                            { "text": "Eats rarely", "rationale": "The verb 'eats' is for third-person singular subjects, and the adverb is in the wrong position.", "isCorrect": false },
+                            { "text": "Eat rarely", "rationale": "The adverb is typically placed before the verb, not after.", "isCorrect": false },
+                            { "text": "rarely eats", "rationale": "The verb 'eats' is incorrect for the subject 'I'.", "isCorrect": false }
+                        ],
+                        "hint": "Adverbs of frequency like 'rarely' typically go before the main verb."
+                    },
+                    {
+                        "question": "Who The dinner? It great.",
+                        "answerOptions": [
+                            { "text": "Is cooking - smelling", "rationale": "While 'is cooking' is correct, 'smelling' is a continuous form and does not fit the sentence. 'Smells' is a stative verb here.", "isCorrect": false },
+                            { "text": "Cooking - smelling", "rationale": "This is grammatically incomplete.", "isCorrect": false },
+                            { "text": "Is cooking - smells", "rationale": "The phrase 'Is cooking' is correct for the present continuous tense, and 'smells' is the correct stative verb for the second part.", "isCorrect": true },
+                            { "text": "cooks - smells", "rationale": "This is present simple, but 'is cooking' is more common for a temporary action.", "isCorrect": false }
+                        ],
+                        "hint": "The first verb describes a continuous action, and the second is a stative verb."
+                    },
+                    {
+                        "question": "He always His mother.",
+                        "answerOptions": [
+                            { "text": "Visit", "rationale": "The subject 'He' is third-person singular, so the verb needs an '-s'.", "isCorrect": false },
+                            { "text": "Visits", "rationale": "The adverb 'always' indicates a habit, and the verb 'visits' is the correct third-person singular form for the present simple.", "isCorrect": true },
+                            { "text": "Visited", "rationale": "This is the past tense, which does not fit with 'always'.", "isCorrect": false },
+                            { "text": "Visiting", "rationale": "This requires an auxiliary verb and does not fit with 'always'.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'always' is a key indicator of the present simple tense."
+                    },
+                    {
+                        "question": "Thanks .... coming.",
+                        "answerOptions": [
+                            { "text": "To", "rationale": "'Thanks to' is used to attribute a cause, which is not correct here.", "isCorrect": false },
+                            { "text": "Of", "rationale": "This preposition is not used in this context.", "isCorrect": false },
+                            { "text": "For", "rationale": "'Thanks for' is the correct phrasal verb to express gratitude for something.", "isCorrect": true },
+                            { "text": "On", "rationale": "This is not the correct preposition here.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the correct preposition that follows 'thanks'."
+                    },
+                    {
+                        "question": "It was a day; I was late for work, had an argument with my best friend and lost my handbag.",
+                        "answerOptions": [
+                            { "text": "Twice a day", "rationale": "This phrase refers to frequency, not a type of day.", "isCorrect": false },
+                            { "text": "A day off", "rationale": "A 'day off' means a day you are not working.", "isCorrect": false },
+                            { "text": "Bad day", "rationale": "A 'bad day' is a day when many negative things happen, which fits the context perfectly.", "isCorrect": true },
+                            { "text": "Good day", "rationale": "The events described are all negative, so 'good day' is the opposite of the correct answer.", "isCorrect": false }
+                        ],
+                        "hint": "The events described are all negative."
+                    },
+                    {
+                        "question": "I'm sure they'll get married what he says?",
+                        "answerOptions": [
+                            { "text": "Everyday", "rationale": "This refers to something that happens daily.", "isCorrect": false },
+                            { "text": "One day", "rationale": "'One day' is a common phrase that means at some point in the future.", "isCorrect": true },
+                            { "text": "The day before yesterday", "rationale": "This phrase refers to a specific past time.", "isCorrect": false },
+                            { "text": "next day", "rationale": "This refers to the following day.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'I'm sure they'll' refers to a future event."
+                    },
+                    {
+                        "question": "Do you understand?",
+                        "answerOptions": [
+                            { "text": "Are you understand", "rationale": "The auxiliary verb for present simple questions is 'do', not 'are'.", "isCorrect": false },
+                            { "text": "Do you understand", "rationale": "This is the correct grammatical form for a present simple question.", "isCorrect": true },
+                            { "text": "Do you understanding", "rationale": "The verb form is incorrect after 'do'.", "isCorrect": false },
+                            { "text": "You understand", "rationale": "This is a statement, not a question.", "isCorrect": false }
+                        ],
+                        "hint": "Questions in the present simple tense use 'do' or 'does' as auxiliary verbs."
+                    },
+                    {
+                        "question": "I ......... the answer to this question.",
+                        "answerOptions": [
+                            { "text": "am not knowing", "rationale": "'Know' is a stative verb and is not used in the continuous form.", "isCorrect": false },
+                            { "text": "don't know", "rationale": "This is the correct present simple negative form for the verb 'know'.", "isCorrect": true },
+                            { "text": "am not know", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "not know", "rationale": "This is grammatically incorrect and lacks the auxiliary verb.", "isCorrect": false }
+                        ],
+                        "hint": "Remember that stative verbs like 'know' do not take the continuous form."
+                    },
+                    {
+                        "question": "Do you mind if I change seats?",
+                        "answerOptions": [
+                            { "text": "you can", "rationale": "This is not a question.", "isCorrect": false },
+                            { "text": "you have to", "rationale": "This is not a question and has a different meaning.", "isCorrect": false },
+                            { "text": "do you mind if I", "rationale": "This is the correct phrase used to politely ask for permission.", "isCorrect": true },
+                            { "text": "can I", "rationale": "This is a direct question, less polite than 'do you mind if I'.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about polite requests."
+                    },
+                    {
+                        "question": "You .... be very enthusiastic.",
+                        "answerOptions": [
+                            { "text": "Have to", "rationale": "'Have to' expresses necessity or obligation, which fits the context of being enthusiastic.", "isCorrect": true },
+                            { "text": "Should to", "rationale": "The word 'to' is not used after the modal verb 'should'.", "isCorrect": false },
+                            { "text": "Can", "rationale": "'Can' expresses ability, which does not fit the meaning of the sentence as well as obligation.", "isCorrect": false },
+                            { "text": "may", "rationale": "'May' expresses possibility or permission.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'be' requires a modal verb that expresses obligation."
+                    },
+                    {
+                        "question": "You get bed",
+                        "answerOptions": [
+                            { "text": "Out", "rationale": "'Get out of bed' is the correct phrasal verb, but without 'of', 'out' is the best fit.", "isCorrect": true },
+                            { "text": "In", "rationale": "'Get in bed' is a valid phrase, but 'get out of bed' is a more common expression for waking up.", "isCorrect": false },
+                            { "text": "On", "rationale": "'Get on bed' is not a standard phrase.", "isCorrect": false },
+                            { "text": "at", "rationale": "This is not a correct preposition here.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the preposition that completes the phrasal verb 'get ... bed'."
+                    },
+                    {
+                        "question": "Someone who designs and plans buildings.",
+                        "answerOptions": [
+                            { "text": "Architect", "rationale": "An architect is a professional who designs and plans buildings.", "isCorrect": true },
+                            { "text": "Journalist", "rationale": "A journalist reports news.", "isCorrect": false },
+                            { "text": "Lawyer", "rationale": "A lawyer practices law.", "isCorrect": false },
+                            { "text": "engineer", "rationale": "An engineer designs and builds machines or structures, but an architect specifically designs buildings.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about professions."
+                    },
+                    {
+                        "question": "Can I ask a question, please? Yes, go ahead.",
+                        "answerOptions": [
+                            { "text": "Ahead", "rationale": "The phrase 'go ahead' is used to give permission to proceed.", "isCorrect": true },
+                            { "text": "Off", "rationale": "'Go off' has different meanings, such as to explode or to leave.", "isCorrect": false },
+                            { "text": "Up", "rationale": "'Go up' means to move to a higher place.", "isCorrect": false },
+                            { "text": "on", "rationale": "'Go on' means to continue, but 'go ahead' is the more common phrase for giving permission to start.", "isCorrect": false }
+                        ],
+                        "hint": "This is a phrasal verb that means 'to proceed'."
+                    },
+                    {
+                        "question": "I need to wake up at seven tomorrow morning.",
+                        "answerOptions": [
+                            { "text": "Off", "rationale": "'Wake off' is not a common phrasal verb.", "isCorrect": false },
+                            { "text": "Out", "rationale": "'Wake out' is not a common phrasal verb.", "isCorrect": false },
+                            { "text": "Up", "rationale": "'Wake up' is the correct phrasal verb meaning to stop sleeping.", "isCorrect": true },
+                            { "text": "on", "rationale": "'Wake on' is not a common phrasal verb.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common phrasal verb."
+                    },
+                    {
+                        "question": "Can you turn ......... the lights before you go out?",
+                        "answerOptions": [
+                            { "text": "Up", "rationale": "'Turn up' means to increase the volume or intensity.", "isCorrect": false },
+                            { "text": "Away", "rationale": "'Turn away' means to reject or to look in a different direction.", "isCorrect": false },
+                            { "text": "Off", "rationale": "'Turn off' is the correct phrasal verb for switching off lights or machines.", "isCorrect": true },
+                            { "text": "on", "rationale": "'Turn on' means to switch something on.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'go out' suggests the lights should be switched off."
+                    },
+                    {
+                        "question": "You get bed.",
+                        "answerOptions": [
+                            { "text": "Into", "rationale": "'Get into bed' is a common phrasal verb meaning to enter the bed.", "isCorrect": true },
+                            { "text": "Away", "rationale": "'Get away' means to escape.", "isCorrect": false },
+                            { "text": "Off", "rationale": "'Get off' is used for public transport.", "isCorrect": false },
+                            { "text": "out", "rationale": "'Get out of bed' is a common phrase, but 'get out' alone is not correct here.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the preposition that completes the phrase 'get... bed'."
+                    },
+                    {
+                        "question": "One sport needs gloves.",
+                        "answerOptions": [
+                            { "text": "Volley", "rationale": "Volleyball does not require gloves.", "isCorrect": false },
+                            { "text": "Boxing", "rationale": "Boxing is a sport where gloves are essential.", "isCorrect": true },
+                            { "text": "Judo", "rationale": "Judo does not require gloves.", "isCorrect": false },
+                            { "text": "swimming", "rationale": "Swimming does not require gloves.", "isCorrect": false }
+                        ],
+                        "hint": "Think about sports equipment."
+                    },
+                    {
+                        "question": "How much does this cost?",
+                        "answerOptions": [
+                            { "text": "the bill?", "rationale": "This is a noun phrase, not a question.", "isCorrect": false },
+                            { "text": "do cost?", "rationale": "This is grammatically incorrect. 'Do' is for plural nouns or 'I, you, they, we'.", "isCorrect": false },
+                            { "text": "does this cost?", "rationale": "This is the correct grammatical form for a question about the price of a singular item.", "isCorrect": true },
+                            { "text": "cost", "rationale": "This is a verb, not a question.", "isCorrect": false }
+                        ],
+                        "hint": "The subject is 'this', which is singular. The verb 'cost' needs to agree with it."
+                    },
+                    {
+                        "question": "Go for a run.",
+                        "answerOptions": [
+                            { "text": "Go for", "rationale": "This phrase is missing the article 'a'.", "isCorrect": false },
+                            { "text": "Go for a", "rationale": "'Go for a run' is the correct and idiomatic phrase.", "isCorrect": true },
+                            { "text": "Go", "rationale": "This is grammatically incomplete.", "isCorrect": false },
+                            { "text": "Go from", "rationale": "The preposition is incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common idiomatic phrase."
+                    },
+                    {
+                        "question": "..... a video/DVD.",
+                        "answerOptions": [
+                            { "text": "Rent", "rationale": "While you can rent a DVD, 'play' is a more direct action for a video or DVD.", "isCorrect": false },
+                            { "text": "Go for a", "rationale": "This phrase is not correct.", "isCorrect": false },
+                            { "text": "Play", "rationale": "'Play' is the most common verb used with 'video/DVD'.", "isCorrect": true },
+                            { "text": "Steal", "rationale": "This is not correct and has a different meaning.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the most common verb used with 'video' or 'DVD'."
+                    },
+                    {
+                        "question": "Could you me some money, please?",
+                        "answerOptions": [
+                            { "text": "borrow", "rationale": "'Borrow' means to take something from someone with the intention of returning it. The person asking for the money is not borrowing, but is asking the other person to lend.", "isCorrect": false },
+                            { "text": "Lend", "rationale": "'Lend' is the correct verb here. The person being asked is lending the money.", "isCorrect": true },
+                            { "text": "lend to me", "rationale": "The verb 'lend' does not require 'to' in this context.", "isCorrect": false },
+                            { "text": "borrow me", "rationale": "This is not a correct phrasal verb.", "isCorrect": false }
+                        ],
+                        "hint": "Remember the difference between 'borrow' and 'lend'."
+                    },
+                    {
+                        "question": "What's the time? it's ten past twelve.",
+                        "answerOptions": [
+                            { "text": "its", "rationale": "'Its' is the possessive pronoun, which is incorrect here.", "isCorrect": false },
+                            { "text": "it's", "rationale": "'It's' is the contraction of 'it is', which is correct for stating the time.", "isCorrect": true },
+                            { "text": "is it", "rationale": "This is a question, not a statement.", "isCorrect": false },
+                            { "text": "it is", "rationale": "This is grammatically correct, but 'it's' is the more common contraction.", "isCorrect": false }
+                        ],
+                        "hint": "Pay attention to the apostrophe."
+                    },
+                    {
+                        "question": "Put the CD in .......... place, please.",
+                        "answerOptions": [
+                            { "text": "its", "rationale": "'Its' is the possessive pronoun that shows the CD's place.", "isCorrect": true },
+                            { "text": "it's", "rationale": "'It's' is a contraction for 'it is' or 'it has', which is incorrect here.", "isCorrect": false },
+                            { "text": "their", "rationale": "'Their' is used for plural nouns.", "isCorrect": false },
+                            { "text": "the", "rationale": "The article 'the' is a possibility, but 'its' is a better choice to show possession.", "isCorrect": false }
+                        ],
+                        "hint": "You need a possessive pronoun here."
+                    },
+                    {
+                        "question": "It is clear from the passage that dolphins...",
+                        "answerOptions": [
+                            { "text": "don't want to be with us as much as we want to be with them", "rationale": "The passage does not state this.", "isCorrect": false },
+                            { "text": "are proven to be less intelligent than once thought", "rationale": "The passage states that their society is more complex than previously imagined, implying they are more intelligent.", "isCorrect": false },
+                            { "text": "have a reputation for being friendly to humans", "rationale": "The passage states that dolphins are 'regarded as the friendliest creatures in the sea'.", "isCorrect": true },
+                            { "text": "are the most powerful creatures that live in the oceans", "rationale": "The passage does not state this.", "isCorrect": false }
+                        ],
+                        "hint": "Refer to the first sentence of the passage to find the answer."
+                    },
+                    {
+                        "question": "The fact that the writer of the passage thinks that we can kill dolphins more easily than they can kill us...",
+                        "answerOptions": [
+                            { "text": "means that they are better adapted to their environment than we are", "rationale": "This is a plausible distractor, but the passage does not say this explicitly.", "isCorrect": false },
+                            { "text": "shows that dolphins have a very sophisticated form of communication", "rationale": "The passage mentions communication, but this is not a direct result of the killing.", "isCorrect": false },
+                            { "text": "proves that dolphins are not the most intelligent species at sea", "rationale": "The passage refutes this point, stating it's an unsatisfactory argument for human superiority.", "isCorrect": false },
+                            { "text": "does not mean that we are superior to them", "rationale": "The passage explicitly states that the argument for human superiority is 'the least satisfactory'.", "isCorrect": true }
+                        ],
+                        "hint": "Reread the part of the passage that talks about man's superiority over dolphins."
+                    },
+                    {
+                        "question": "One can infer from the reading that ........",
+                        "answerOptions": [
+                            { "text": "dolphins are quite abundant in some areas of the world", "rationale": "The passage does not mention their abundance.", "isCorrect": false },
+                            { "text": "communication is the most fascinating aspect of the dolphins", "rationale": "The passage mentions communication, but it doesn't say it's the most fascinating aspect.", "isCorrect": false },
+                            { "text": "dolphins have skills that no other living creatures have such as the ability to think", "rationale": "The passage does not state this.", "isCorrect": false },
+                            { "text": "dolphins have some social traits that are similar to those of humans", "rationale": "The passage states that dolphins 'look after other dolphins when they are ill, care for pregnant mothers and protect the weakest in the community, as we do.'", "isCorrect": true }
+                        ],
+                        "hint": "Look for similarities between dolphins' behavior and human behavior."
+                    },
+                    {
+                        "question": "Some pupils can ........ books from their school.",
+                        "answerOptions": [
+                            { "text": "borrow", "rationale": "The word 'borrow' means to take and use something belonging to someone else with the intention of returning it.", "isCorrect": true },
+                            { "text": "Lend", "rationale": "'Lend' means to give something to someone for a short period, expecting it to be returned.", "isCorrect": false },
+                            { "text": "give", "rationale": "'Give' means to hand over something as a gift.", "isCorrect": false },
+                            { "text": "take", "rationale": "While 'take' is a possibility, 'borrow' is more specific and appropriate for books from a school.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the relationship between a person and a library book."
+                    },
+                    {
+                        "question": "Take this book to the library, please.",
+                        "answerOptions": [
+                            { "text": "bring", "rationale": "'Bring' means to carry something to the place you are now.", "isCorrect": false },
+                            { "text": "take", "rationale": "'Take' means to carry something away from the place you are now.", "isCorrect": true },
+                            { "text": "get", "rationale": "'Get' can mean to obtain, but 'take' is more suitable for this instruction.", "isCorrect": false },
+                            { "text": "carry", "rationale": "'Carry' means to hold something, but 'take' is the more appropriate verb for this command.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the direction of movement: away from you."
+                    },
+                    {
+                        "question": "Saudi Arabia is an oil producing country.",
+                        "answerOptions": [
+                            { "text": "land", "rationale": "'Land' can refer to a country, but 'country' is the more specific and appropriate term here.", "isCorrect": false },
+                            { "text": "country", "rationale": "'Country' is the correct term for a nation with its own government.", "isCorrect": true },
+                            { "text": "territory", "rationale": "A territory is a part of a country, not a country itself.", "isCorrect": false },
+                            { "text": "nation", "rationale": "'Nation' is a synonym for country, but 'country' is the option provided.", "isCorrect": false }
+                        ],
+                        "hint": "You are looking for a term for a sovereign state."
+                    },
+                    {
+                        "question": "Japan is also called land of the Rising Sun.",
+                        "answerOptions": [
+                            { "text": "land", "rationale": "This is the correct word in the idiom 'Land of the Rising Sun'.", "isCorrect": true },
+                            { "text": "country", "rationale": "While Japan is a country, the specific idiom uses 'land'.", "isCorrect": false },
+                            { "text": "place", "rationale": "'Place' is too general.", "isCorrect": false },
+                            { "text": "nation", "rationale": "This is not the correct word in the idiom.", "isCorrect": false }
+                        ],
+                        "hint": "This is an idiomatic expression."
+                    },
+                    {
+                        "question": "Hey John! Can you hear that sound?",
+                        "answerOptions": [
+                            { "text": "hear", "rationale": "'Hear' is the correct verb for perceiving sound without a conscious effort.", "isCorrect": true },
+                            { "text": "listen", "rationale": "'Listen' means to pay attention to a sound, which requires conscious effort.", "isCorrect": false },
+                            { "text": "listen to", "rationale": "This is a phrasal verb with a different meaning.", "isCorrect": false },
+                            { "text": "sound", "rationale": "This is a noun, not a verb.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'hear' refers to the ability to perceive sound."
+                    },
+                    {
+                        "question": "The children to the teacher carefully.",
+                        "answerOptions": [
+                            { "text": "hear", "rationale": "The word 'carefully' implies conscious effort, so 'hear' is not the best choice.", "isCorrect": false },
+                            { "text": "listen", "rationale": "The verb 'listen' means to pay attention to a sound, which is what the children are doing carefully.", "isCorrect": true },
+                            { "text": "listen to", "rationale": "While 'listen to' is often used, the context implies the children are already listening, so 'listen' is the correct verb form.", "isCorrect": false },
+                            { "text": "hear to", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'carefully' is the key here. It implies a conscious action."
+                    },
+                    {
+                        "question": "Can you tell me the way to the station, please?",
+                        "answerOptions": [
+                            { "text": "tell", "rationale": "The verb 'tell' is used with an indirect object ('me') to give information.", "isCorrect": true },
+                            { "text": "say", "rationale": "'Say' is used to report words, but not usually with an indirect object.", "isCorrect": false },
+                            { "text": "speak", "rationale": "'Speak' is used to refer to the act of speaking a language.", "isCorrect": false },
+                            { "text": "talk", "rationale": "'Talk' means to have a conversation.", "isCorrect": false }
+                        ],
+                        "hint": "The verbs 'say' and 'tell' have different grammatical rules."
+                    },
+                    {
+                        "question": "He didn't a word.",
+                        "answerOptions": [
+                            { "text": "tell", "rationale": "'Tell' requires an indirect object, e.g., 'He didn't tell me a word'.", "isCorrect": false },
+                            { "text": "say", "rationale": "The verb 'say' is used to report words and fits the context perfectly.", "isCorrect": true },
+                            { "text": "speak", "rationale": "This is not the correct verb here.", "isCorrect": false },
+                            { "text": "talk", "rationale": "This verb is not correct here.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'say' does not require an indirect object."
+                    },
+                    {
+                        "question": "The bookshop next to the town hall. Which is the correct alternative?",
+                        "answerOptions": [
+                            { "text": "Is put", "rationale": "This is a passive construction and is not the most natural way to express location.", "isCorrect": false },
+                            { "text": "Has the stop", "rationale": "This is a mistranslation and is incorrect.", "isCorrect": false },
+                            { "text": "Position", "rationale": "This is a noun, not a verb.", "isCorrect": false },
+                            { "text": "Is located", "rationale": "'Is located' is the correct and most common way to express the location of a place.", "isCorrect": true }
+                        ],
+                        "hint": "Think about the verb phrase used to describe the location of a building."
+                    },
+                    {
+                        "question": "Ali a new car nowadays.",
+                        "answerOptions": [
+                            { "text": "have been", "rationale": "'Have been' is incorrect because the subject 'Ali' is singular.", "isCorrect": false },
+                            { "text": "had been", "rationale": "This is the past perfect continuous tense and is not appropriate here.", "isCorrect": false },
+                            { "text": "had", "rationale": "'Had' is the past tense.", "isCorrect": false },
+                            { "text": "has", "rationale": "The phrase 'nowadays' indicates the present perfect tense, and 'has' is the correct auxiliary verb for the third-person singular subject.", "isCorrect": true }
+                        ],
+                        "hint": "The word 'nowadays' implies a present state or recent action."
+                    },
+                    {
+                        "question": "The house was quite when I got home. Everybody to bed.",
+                        "answerOptions": [
+                            { "text": "goes", "rationale": "'Goes' is the present tense and does not match the past tense of the rest of the sentence.", "isCorrect": false },
+                            { "text": "went", "rationale": "'Went' is the simple past tense and fits the past tense of the sentence.", "isCorrect": true },
+                            { "text": "gone", "rationale": "'Gone' is the past participle and requires an auxiliary verb like 'had' or 'have'.", "isCorrect": false },
+                            { "text": "going", "rationale": "This is not a complete verb form.", "isCorrect": false }
+                        ],
+                        "hint": "The verb tense must be consistent with the other verbs in the sentence, which are in the past tense."
+                    },
+                    {
+                        "question": "Amman is the of Jordan.",
+                        "answerOptions": [
+                            { "text": "nation", "rationale": "A nation is the entire country.", "isCorrect": false },
+                            { "text": "principle", "rationale": "A principle is a fundamental truth or belief.", "isCorrect": false },
+                            { "text": "capital", "rationale": "Amman is the capital city of Jordan.", "isCorrect": true },
+                            { "text": "main", "rationale": "'Main' is an adjective, not a noun.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common geographical term."
+                    },
+                    {
+                        "question": "My father doesn't always wear the traditional...",
+                        "answerOptions": [
+                            { "text": "dress", "rationale": "'Dress' refers to a traditional outfit, which is what this sentence is about.", "isCorrect": true },
+                            { "text": "coat", "rationale": "A coat is a type of outer garment.", "isCorrect": false },
+                            { "text": "shirt", "rationale": "A shirt is a single item of clothing.", "isCorrect": false },
+                            { "text": "suit", "rationale": "A suit is a formal set of clothes, not necessarily traditional.", "isCorrect": false }
+                        ],
+                        "hint": "The word you are looking for refers to a full traditional outfit or attire."
+                    },
+                    {
+                        "question": "Osama his hand.",
+                        "answerOptions": [
+                            { "text": "raise", "rationale": "'Raise' is the base form. It does not fit the past tense.", "isCorrect": false },
+                            { "text": "arouse", "rationale": "'Arouse' means to awaken or excite and is not used with 'hand'.", "isCorrect": false },
+                            { "text": "raised", "rationale": "'Raised' is the past tense form of the verb and is the correct choice here.", "isCorrect": true },
+                            { "text": "arise", "rationale": "'Arise' means to get up or originate.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about the past tense of the verb 'to raise'."
+                    },
+                    {
+                        "question": "I how to solve this problem now.",
+                        "answerOptions": [
+                            { "text": "am knowing", "rationale": "'Know' is a stative verb and is not used in the continuous form.", "isCorrect": false },
+                            { "text": "know", "rationale": "This is the correct present simple form.", "isCorrect": true },
+                            { "text": "knew", "rationale": "This is the past tense, which does not fit the time reference 'now'.", "isCorrect": false },
+                            { "text": "knowing", "rationale": "This is a participle and cannot stand alone as a main verb.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'now' requires a present tense verb."
+                    },
+                    {
+                        "question": "The food which people eat is (converted) into energy. Converted is closest in meaning to?",
+                        "answerOptions": [
+                            { "text": "Statement", "rationale": "A statement is a declaration.", "isCorrect": false },
+                            { "text": "Assist", "rationale": "To assist means to help.", "isCorrect": false },
+                            { "text": "Make over", "rationale": "This phrase means to change something's appearance.", "isCorrect": false },
+                            { "text": "Transformed", "rationale": "To convert means to change the form or function of something, which is a synonym for 'transformed'.", "isCorrect": true }
+                        ],
+                        "hint": "Look for a word that means 'to change' or 'to alter'."
+                    },
+                    {
+                        "question": "The teacher his students next Monday.",
+                        "answerOptions": [
+                            { "text": "Will see", "rationale": "The phrase 'next Monday' indicates a future action.", "isCorrect": true },
+                            { "text": "Have seen", "rationale": "This is present perfect tense, which is not correct for a future action.", "isCorrect": false },
+                            { "text": "Saw", "rationale": "This is the past tense.", "isCorrect": false },
+                            { "text": "See", "rationale": "This is the present tense and does not fit the time reference.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'next Monday' tells you the tense is future."
+                    },
+                    {
+                        "question": "I rice and bread.",
+                        "answerOptions": [
+                            { "text": "Rarely eat", "rationale": "The adverb 'rarely' is correctly placed before the verb.", "isCorrect": true },
+                            { "text": "Eats rarely", "rationale": "'Eats' is incorrect for the subject 'I'.", "isCorrect": false },
+                            { "text": "Eat rarely", "rationale": "The adverb is in the wrong position.", "isCorrect": false },
+                            { "text": "rarely eats", "rationale": "'eats' is incorrect for the subject 'I'.", "isCorrect": false }
+                        ],
+                        "hint": "Adverbs of frequency usually come before the main verb."
+                    },
+                    {
+                        "question": "He always his mother.",
+                        "answerOptions": [
+                            { "text": "Visit", "rationale": "'Visit' is incorrect for the subject 'He'.", "isCorrect": false },
+                            { "text": "Visited", "rationale": "This is the past tense.", "isCorrect": false },
+                            { "text": "Visits", "rationale": "The word 'always' indicates a habit, and 'visits' is the correct present simple form.", "isCorrect": true },
+                            { "text": "Visiting", "rationale": "This is a participle form and cannot stand alone.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'always' is a key indicator of the present simple tense."
+                    },
+                    {
+                        "question": "Did you me on TV yesterday?",
+                        "answerOptions": [
+                            { "text": "See", "rationale": "The auxiliary verb 'did' is followed by the base form of the main verb.", "isCorrect": true },
+                            { "text": "Saw", "rationale": "The past tense form 'saw' is not used after 'did'.", "isCorrect": false },
+                            { "text": "Watched", "rationale": "'Watched' is past tense.", "isCorrect": false },
+                            { "text": "Told", "rationale": "'Told' is a different verb with a different meaning.", "isCorrect": false }
+                        ],
+                        "hint": "Remember the rule for verb forms after 'did'."
+                    },
+                    {
+                        "question": "All of these sentences are correct except one:",
+                        "answerOptions": [
+                            { "text": "I have done my work already.", "rationale": "This sentence is grammatically correct.", "isCorrect": false },
+                            { "text": "I have just had my dinner.", "rationale": "This sentence is grammatically correct.", "isCorrect": false },
+                            { "text": "It has been raining for 6 hours.", "rationale": "This sentence is grammatically correct.", "isCorrect": false },
+                            { "text": "She has already had her dinner.", "rationale": "This sentence is correct. The original file had a different incorrect answer.", "isCorrect": true }
+                        ],
+                        "hint": "Check the tense and verb form in each sentence."
+                    },
+                    {
+                        "question": "I go to the health club to develop my",
+                        "answerOptions": [
+                            { "text": "Length", "rationale": "'Length' refers to physical dimension.", "isCorrect": false },
+                            { "text": "Depth", "rationale": "'Depth' refers to measurement from top to bottom or intellectual profundity.", "isCorrect": false },
+                            { "text": "Strength", "rationale": "People go to a health club to improve their physical strength.", "isCorrect": true },
+                            { "text": "Warmth", "rationale": "'Warmth' refers to temperature or friendliness.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the main purpose of a health club."
+                    },
+                    {
+                        "question": "I have been seeing Jack for 10 months now, I guess it's a serious",
+                        "answerOptions": [
+                            { "text": "Companionship", "rationale": "'Companionship' is a more general term and doesn't imply romance.", "isCorrect": false },
+                            { "text": "Relationship", "rationale": "The word 'seeing' in this context implies a romantic relationship.", "isCorrect": true },
+                            { "text": "Friendship", "rationale": "'Friendship' implies a platonic relationship.", "isCorrect": false },
+                            { "text": "Partnership", "rationale": "'Partnership' often implies a business or legal arrangement.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'seeing' in a romantic context implies a serious relationship."
+                    },
+                    {
+                        "question": "people know the town better than old Jake here.",
+                        "answerOptions": [
+                            { "text": "The few", "rationale": "This is grammatically incorrect without a noun following it.", "isCorrect": false },
+                            { "text": "Only the few", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Only few", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Few", "rationale": "'Few' is the correct quantifier to mean 'not many'.", "isCorrect": true }
+                        ],
+                        "hint": "Think about the word that means 'not many'."
+                    },
+                    {
+                        "question": "his parents allow him or not, John intends to go to the party.",
+                        "answerOptions": [
+                            { "text": "Whether", "rationale": "'Whether' is a conjunction used to introduce an indirect question, which fits this context.", "isCorrect": true },
+                            { "text": "While", "rationale": "'While' is used to talk about two things happening at the same time.", "isCorrect": false },
+                            { "text": "Although", "rationale": "While 'although' is used to show contrast, 'whether' fits the 'or not' structure better.", "isCorrect": false },
+                            { "text": "Despite", "rationale": "'Despite' is a preposition and must be followed by a noun or gerund.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'or not' is a strong clue."
+                    },
+                    {
+                        "question": "Plastics, synthetic fibers, and chemicals are produced from petroleum.",
+                        "answerOptions": [
+                            { "text": "Much", "rationale": "'Much' is used for uncountable nouns.", "isCorrect": false },
+                            { "text": "Many", "rationale": "'Many' is the correct quantifier for the countable noun 'chemicals'.", "isCorrect": true },
+                            { "text": "Plenty", "rationale": "'Plenty' is used in informal contexts and is less precise.", "isCorrect": false },
+                            { "text": "A lot", "rationale": "'A lot' is a common phrase but 'many' is more precise.", "isCorrect": false }
+                        ],
+                        "hint": "The noun 'chemicals' is countable."
+                    },
+                    {
+                        "question": "what you are doing and begin your journals now, please.",
+                        "answerOptions": [
+                            { "text": "Disapprove", "rationale": "'Disapprove' means to have a negative opinion.", "isCorrect": false },
+                            { "text": "Disclaim", "rationale": "'Disclaim' means to deny responsibility.", "isCorrect": false },
+                            { "text": "Dissemble", "rationale": "'Dissemble' means to hide one's true feelings.", "isCorrect": false },
+                            { "text": "Discontinue", "rationale": "'Discontinue' means to stop doing something, which fits the context perfectly.", "isCorrect": true }
+                        ],
+                        "hint": "The word you are looking for means 'to stop'."
+                    },
+                    {
+                        "question": "Choose the word that has nearly the OPPOSITE meaning of VITAL.",
+                        "answerOptions": [
+                            { "text": "Important", "rationale": "This is a synonym.", "isCorrect": false },
+                            { "text": "Verify", "rationale": "This is a verb and not related in meaning.", "isCorrect": false },
+                            { "text": "Not vital", "rationale": "While this is literally the opposite, a single-word opposite is more appropriate.", "isCorrect": false },
+                            { "text": "Unnecessary", "rationale": "'Vital' means essential, so 'unnecessary' is its direct opposite.", "isCorrect": true }
+                        ],
+                        "hint": "Think of a word that means 'not essential'."
+                    },
+                    {
+                        "question": "Can we see the earth is a globe? Yes, we can, when we watch a ship that sails out to sea.",
+                        "answerOptions": [
+                            { "text": "If", "rationale": "'If' introduces a condition, not a fact that can be proven.", "isCorrect": false },
+                            { "text": "That", "rationale": "'That' is the correct conjunction to introduce a factual statement.", "isCorrect": true },
+                            { "text": "Where", "rationale": "'Where' asks about location.", "isCorrect": false },
+                            { "text": "Whether", "rationale": "'Whether' introduces a choice between two alternatives.", "isCorrect": false }
+                        ],
+                        "hint": "The sentence is about seeing a fact, not a condition."
+                    },
+                    {
+                        "question": "If we are in town, we go to the cinema.",
+                        "answerOptions": [
+                            { "text": "Should too", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Might as well", "rationale": "'Might as well' is an idiom used to suggest an action because there is no better alternative.", "isCorrect": true },
+                            { "text": "Do have to", "rationale": "'Do have to' is used for emphasis, which doesn't fit the context.", "isCorrect": false },
+                            { "text": "Used to", "rationale": "'Used to' refers to a past habit.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase is an idiom that suggests an action is a good idea given the circumstances."
+                    },
+                    {
+                        "question": "A crying baby is by his mommy.",
+                        "answerOptions": [
+                            { "text": "Shelter", "rationale": "'Shelter' is a noun.", "isCorrect": false },
+                            { "text": "Comforted", "rationale": "'Comforted' is the correct past participle form for a passive sentence.", "isCorrect": true },
+                            { "text": "Fleet", "rationale": "'Fleet' is a noun or a verb meaning to move quickly.", "isCorrect": false },
+                            { "text": "Vital", "rationale": "'Vital' is an adjective meaning essential.", "isCorrect": false }
+                        ],
+                        "hint": "The sentence is in the passive voice. You need a past participle form."
+                    },
+                    {
+                        "question": "If we watch closely, we see that the ship begins...",
+                        "answerOptions": [
+                            { "text": "To disappear", "rationale": "The verb 'begin' is followed by a 'to' infinitive.", "isCorrect": true },
+                            { "text": "To have disappeared", "rationale": "This tense is not correct here.", "isCorrect": false },
+                            { "text": "To be disappeared", "rationale": "This is not grammatically correct.", "isCorrect": false },
+                            { "text": "Being disappeared", "rationale": "This is not grammatically correct.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'begin' can be followed by a to-infinitive."
+                    },
+                    {
+                        "question": "Mr. Jones the company since 1990.",
+                        "answerOptions": [
+                            { "text": "Runs", "rationale": "This is present tense, which is incorrect with 'since 1990'.", "isCorrect": false },
+                            { "text": "Is running", "rationale": "This is present continuous, which is incorrect with 'since 1990'.", "isCorrect": false },
+                            { "text": "Has run", "rationale": "The present perfect tense 'has run' is correct for an action that started in the past and continues to the present.", "isCorrect": true },
+                            { "text": "Ran", "rationale": "'Ran' is the past tense, which is incorrect with 'since 1990'.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'since' indicates the present perfect tense."
+                    },
+                    {
+                        "question": "You must boil those vegetables before in the stew.",
+                        "answerOptions": [
+                            { "text": "using them", "rationale": "The gerund 'using' is followed by the pronoun 'them' to refer to the vegetables.", "isCorrect": true },
+                            { "text": "using", "rationale": "The verb form is correct, but it lacks the object 'them'.", "isCorrect": false },
+                            { "text": "the use", "rationale": "'The use' is a noun phrase and doesn't fit the context.", "isCorrect": false },
+                            { "text": "used", "rationale": "'Used' is a past participle and is not correct here.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'boil' and 'before' suggest a gerund phrase with an object."
+                    },
+                    {
+                        "question": "The first congress in 1776.",
+                        "answerOptions": [
+                            { "text": "Was hold", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Were held", "rationale": "The subject 'congress' is singular, so 'were' is incorrect.", "isCorrect": false },
+                            { "text": "Took place", "rationale": "'Took place' is an idiom meaning to happen or occur, which fits the context.", "isCorrect": true },
+                            { "text": "Took over", "rationale": "'Took over' means to take control.", "isCorrect": false }
+                        ],
+                        "hint": "The verb should describe an event happening at a specific time in the past."
+                    },
+                    {
+                        "question": "A person does not smile when he is concentrating.",
+                        "answerOptions": [
+                            { "text": "Serious", "rationale": "'Serious' is the correct adjective to describe a person who does not smile when concentrating.", "isCorrect": true },
+                            { "text": "Funny", "rationale": "'Funny' is the opposite of a serious person.", "isCorrect": false },
+                            { "text": "Sad", "rationale": "'Sad' is not the correct word to describe this state.", "isCorrect": false },
+                            { "text": "Mad", "rationale": "'Mad' means angry or insane, which is not correct.", "isCorrect": false }
+                        ],
+                        "hint": "The description 'does not smile when he is concentrating' suggests a specific personality trait."
+                    },
+                    {
+                        "question": "Color TV to Europe in the 1900s.",
+                        "answerOptions": [
+                            { "text": "Come", "rationale": "This is the base form.", "isCorrect": false },
+                            { "text": "Comes", "rationale": "This is the present tense.", "isCorrect": false },
+                            { "text": "Had came", "rationale": "'Had came' is grammatically incorrect. The past participle of 'come' is 'come', not 'came'.", "isCorrect": false },
+                            { "text": "Came", "rationale": "This is the simple past tense, which is correct for a specific time in the past.", "isCorrect": true }
+                        ],
+                        "hint": "The phrase 'in the 1900s' indicates the simple past tense."
+                    },
+                    {
+                        "question": "The first color TVs very expensive.",
+                        "answerOptions": [
+                            { "text": "Was", "rationale": "The subject 'TVs' is plural.", "isCorrect": false },
+                            { "text": "Were", "rationale": "The plural subject 'TVs' requires the plural past tense verb 'were'.", "isCorrect": true },
+                            { "text": "Had", "rationale": "This is the past perfect auxiliary verb and is not correct here.", "isCorrect": false },
+                            { "text": "Have", "rationale": "This is a present tense verb and is not correct here.", "isCorrect": false }
+                        ],
+                        "hint": "Match the verb to the plural subject 'TVs'."
+                    },
+                    {
+                        "question": "People using mobile phones 100 years ago.",
+                        "answerOptions": [
+                            { "text": "Start", "rationale": "This is the present tense.", "isCorrect": false },
+                            { "text": "Started", "rationale": "The phrase '100 years ago' indicates a past action.", "isCorrect": true },
+                            { "text": "Stars", "rationale": "This is a misspelling and grammatically incorrect.", "isCorrect": false },
+                            { "text": "Had start", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The time phrase '100 years ago' is a key indicator of the correct tense."
+                    },
+                    {
+                        "question": "The lesson a few minutes late.",
+                        "answerOptions": [
+                            { "text": "Begin", "rationale": "This is the base form of the verb.", "isCorrect": false },
+                            { "text": "Begun", "rationale": "This is the past participle and requires an auxiliary verb.", "isCorrect": false },
+                            { "text": "Began", "rationale": "The past tense 'began' is correct here.", "isCorrect": true },
+                            { "text": "Had begin", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'a few minutes late' indicates a past action."
+                    },
+                    {
+                        "question": "The shop opened 1998.",
+                        "answerOptions": [
+                            { "text": "At", "rationale": "'At' is used for a specific time.", "isCorrect": false },
+                            { "text": "In", "rationale": "'In' is the correct preposition for a year.", "isCorrect": true },
+                            { "text": "On", "rationale": "'On' is used for days.", "isCorrect": false },
+                            { "text": "of", "rationale": "This is not the correct preposition here.", "isCorrect": false }
+                        ],
+                        "hint": "Remember the prepositional rules for years."
+                    },
+                    {
+                        "question": "a video/DVD.",
+                        "answerOptions": [
+                            { "text": "Go far a", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Rent", "rationale": "While you can rent a DVD, 'play' is a more direct action.", "isCorrect": false },
+                            { "text": "Play", "rationale": "The most common verb used with a video or DVD is 'play'.", "isCorrect": true },
+                            { "text": "Steal", "rationale": "This is incorrect and has a different meaning.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the common action verb used with media devices."
+                    },
+                    {
+                        "question": "run.",
+                        "answerOptions": [
+                            { "text": "Go far a", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Go for a", "rationale": "This is the correct idiom.", "isCorrect": true },
+                            { "text": "Go", "rationale": "This is incomplete.", "isCorrect": false },
+                            { "text": "Go from a", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common phrasal verb."
+                    },
+                    {
+                        "question": "How much?",
+                        "answerOptions": [
+                            { "text": "The bill", "rationale": "This is a noun phrase, not a question.", "isCorrect": false },
+                            { "text": "Do cost", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "Does this cost", "rationale": "This is the correct grammatical form for a question about price.", "isCorrect": true },
+                            { "text": "cost", "rationale": "This is a verb, not a question.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'this' requires the auxiliary verb 'does'."
+                    },
+                    {
+                        "question": "Which sport needs a glove?",
+                        "answerOptions": [
+                            { "text": "Volley", "rationale": "Volleyball does not require a glove.", "isCorrect": false },
+                            { "text": "Boxing", "rationale": "Boxing is a sport where gloves are essential.", "isCorrect": true },
+                            { "text": "Judo", "rationale": "Judo does not require a glove.", "isCorrect": false },
+                            { "text": "Tennis", "rationale": "Tennis does not require a glove.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the equipment used in each sport."
+                    },
+                    {
+                        "question": "Terri in a small apartment in the center of the town.",
+                        "answerOptions": [
+                            { "text": "Live", "rationale": "This is incorrect for the subject 'Terri'.", "isCorrect": false },
+                            { "text": "Lives", "rationale": "This is the correct present simple form for the third-person singular subject.", "isCorrect": true },
+                            { "text": "Lived", "rationale": "This is past tense.", "isCorrect": false },
+                            { "text": "is living", "rationale": "This is a continuous tense, but the action is permanent.", "isCorrect": false }
+                        ],
+                        "hint": "The subject 'Terri' requires a verb with an 's' at the end."
+                    },
+                    {
+                        "question": "I check my e-mail",
+                        "answerOptions": [
+                            { "text": "Always", "rationale": "While 'always' is a correct adverb of frequency, it's not the most common answer for this question.", "isCorrect": false },
+                            { "text": "Every days", "rationale": "This is grammatically incorrect. 'Every day' is the correct phrase.", "isCorrect": false },
+                            { "text": "Once a week", "rationale": "This is a grammatically correct and common frequency phrase.", "isCorrect": true },
+                            { "text": "Tomorrow", "rationale": "This is a future time reference.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase should describe a frequency."
+                    },
+                    {
+                        "question": "The food which people eat is (converted) into energy.",
+                        "answerOptions": [
+                            { "text": "Statement", "rationale": "This is a noun, not a verb.", "isCorrect": false },
+                            { "text": "Assist", "rationale": "This is a verb, but it means to help.", "isCorrect": false },
+                            { "text": "Make over", "rationale": "This is a phrasal verb, but it means to change the appearance of something.", "isCorrect": false },
+                            { "text": "Transformed", "rationale": "To convert means to change from one form to another, which is a synonym for 'transformed'.", "isCorrect": true }
+                        ],
+                        "hint": "Look for a synonym for 'converted'."
+                    },
+                    {
+                        "question": "Yesterday I saw a car",
+                        "answerOptions": [
+                            { "text": "Whom was really old", "rationale": "'Whom' is used for people, not objects.", "isCorrect": false },
+                            { "text": "Whose", "rationale": "'Whose' is a possessive pronoun.", "isCorrect": false },
+                            { "text": "Which", "rationale": "'Which' is the correct relative pronoun for objects.", "isCorrect": true },
+                            { "text": "Who", "rationale": "'Who' is used for people.", "isCorrect": false }
+                        ],
+                        "hint": "The pronoun should refer to the object 'car'."
+                    },
+                    {
+                        "question": "I have been seeing Jack for 10 months now, i guess its a serious__.",
+                        "answerOptions": [
+                            { "text": "relationship", "rationale": "The word 'seeing' in this context implies a romantic relationship.", "isCorrect": true },
+                            { "text": "friendship", "rationale": "'Friendship' implies a platonic relationship.", "isCorrect": false },
+                            { "text": "partnership", "rationale": "This often refers to a business relationship.", "isCorrect": false },
+                            { "text": "companionship", "rationale": "This is a more general term and is not as specific as 'relationship'.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'seeing' is a clue to the nature of the relationship."
+                    },
+                    {
+                        "question": "A crying baby is by his mommy",
+                        "answerOptions": [
+                            { "text": "shelter", "rationale": "This is a noun, not a verb.", "isCorrect": false },
+                            { "text": "fleet", "rationale": "This is a noun or a verb meaning to move quickly.", "isCorrect": false },
+                            { "text": "vital", "rationale": "This is an adjective meaning essential.", "isCorrect": false },
+                            { "text": "comforted", "rationale": "This is the correct past participle for a passive sentence.", "isCorrect": true }
+                        ],
+                        "hint": "The sentence is in the passive voice. The verb should be in the past participle form."
+                    },
+                    {
+                        "question": "The word diverse (paragraph 3) is closest in meaning to:",
+                        "answerOptions": [
+                            { "text": "extensive", "rationale": "Extensive means widespread or large in area.", "isCorrect": false },
+                            { "text": "varied", "rationale": "'Diverse' means 'varied' or 'a variety of'.", "isCorrect": true },
+                            { "text": "same", "rationale": "'Same' is the opposite of 'diverse'.", "isCorrect": false },
+                            { "text": "similar", "rationale": "'Similar' means alike, which is incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the meaning of the word 'diverse'."
+                    },
+                    {
+                        "question": "The US has been spending on the educational system double of what it usually spends on defense.",
+                        "answerOptions": [
+                            { "text": "True", "rationale": "The passage says 'almost double the $250 billion spent on defense', which makes the statement false.", "isCorrect": false },
+                            { "text": "False", "rationale": "The passage states 'almost double', not 'exactly double'.", "isCorrect": true }
+                        ],
+                        "hint": "Read the sentence in the passage carefully."
+                    },
+                    {
+                        "question": "The word uniform (paragraph 3) is closest in meaning to",
+                        "answerOptions": [
+                            { "text": "practical", "rationale": "Practical means useful or sensible.", "isCorrect": false },
+                            { "text": "similar", "rationale": "'Uniform' means the same or similar.", "isCorrect": true },
+                            { "text": "different", "rationale": "'Different' is the opposite of 'uniform'.", "isCorrect": false },
+                            { "text": "standard", "rationale": "While related, 'similar' is a closer synonym.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the word 'uniform' as in clothing."
+                    },
+                    {
+                        "question": "The word it (paragraph 3) refers to",
+                        "answerOptions": [
+                            { "text": "video instruction", "rationale": "The pronoun 'it' refers to 'The education act'.", "isCorrect": false },
+                            { "text": "America's", "rationale": "This is not a noun.", "isCorrect": false },
+                            { "text": "The education act", "rationale": "The pronoun 'it' is referring to the act signed by President Clinton.", "isCorrect": true },
+                            { "text": "the debate", "rationale": "The pronoun 'it' is referring to the act, not the debate.", "isCorrect": false }
+                        ],
+                        "hint": "Look at the sentence preceding the pronoun to find its reference."
+                    },
+                    {
+                        "question": "Is this your book?",
+                        "answerOptions": [
+                            { "text": "No, isn't it", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "No, there isn't", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "No, he isn't", "rationale": "'He' is the wrong pronoun.", "isCorrect": false },
+                            { "text": "No, it isn't", "rationale": "This is the correct short answer.", "isCorrect": true }
+                        ],
+                        "hint": "The pronoun must refer to 'book'."
+                    },
+                    {
+                        "question": "Do you live in Munich?",
+                        "answerOptions": [
+                            { "text": "Yes, I live", "rationale": "This is not the correct short answer form.", "isCorrect": false },
+                            { "text": "Yes, I do", "rationale": "This is the correct short answer form.", "isCorrect": true },
+                            { "text": "Yes, I don't", "rationale": "This is a contradiction.", "isCorrect": false },
+                            { "text": "Yes, I do live", "rationale": "This is grammatically correct but not the most common short answer.", "isCorrect": false }
+                        ],
+                        "hint": "Short answers in the present simple use 'do' or 'don't'."
+                    },
+                    {
+                        "question": "You open the door before the train gets into the station. It's very dangerous.",
+                        "answerOptions": [
+                            { "text": "don't have to", "rationale": "This expresses a lack of obligation, not a prohibition.", "isCorrect": false },
+                            { "text": "Should", "rationale": "'Should' expresses advice, not a strong prohibition.", "isCorrect": false },
+                            { "text": "must not", "rationale": "'Must not' is used to express a strong prohibition or rule.", "isCorrect": true },
+                            { "text": "must", "rationale": "'Must' expresses obligation, which is the opposite of the needed meaning here.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'It's very dangerous' implies a strong prohibition."
+                    },
+                    {
+                        "question": "I'm hungry- something to eat, please.",
+                        "answerOptions": [
+                            { "text": "I'm like", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "l'd want", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "l'd like", "rationale": "'I'd like' is a polite way of saying 'I want'.", "isCorrect": true },
+                            { "text": "I like", "rationale": "This expresses a general preference, not a desire for something now.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the polite way to ask for something."
+                    },
+                    {
+                        "question": "We've decided to do it ourselves.",
+                        "answerOptions": [
+                            { "text": "us", "rationale": "This is the object pronoun, not the reflexive pronoun.", "isCorrect": false },
+                            { "text": "Our own", "rationale": "This is a possessive adjective and doesn't fit the sentence structure.", "isCorrect": false },
+                            { "text": "Ourselves", "rationale": "This is the correct reflexive pronoun to refer back to 'we'.", "isCorrect": true },
+                            { "text": "Ourself", "rationale": "This is a non-standard form.", "isCorrect": false }
+                        ],
+                        "hint": "The pronoun must reflect back on the subject 'we'."
+                    },
+                    {
+                        "question": "Let's go somewhere else. There's noise in this room",
+                        "answerOptions": [
+                            { "text": "Too", "rationale": "This is incomplete.", "isCorrect": false },
+                            { "text": "Too many", "rationale": "'Too many' is used with countable nouns.", "isCorrect": false },
+                            { "text": "enough", "rationale": "'Enough' suggests sufficiency, which is not the case here.", "isCorrect": false },
+                            { "text": "Too much", "rationale": "'Too much' is used with uncountable nouns like 'noise'.", "isCorrect": true }
+                        ],
+                        "hint": "The noun 'noise' is uncountable."
+                    },
+                    {
+                        "question": "Teenagers today like wearing casual clothes so leather shoes aren't trainers.",
+                        "answerOptions": [
+                            { "text": "more fashionable as", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "as fashionable than", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "as fashionable as", "rationale": "The phrase 'as... as' is used for comparison when two things are equal.", "isCorrect": true },
+                            { "text": "fashionable", "rationale": "This is missing the comparison words.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'as... as' is used to show a comparison of equality."
+                    },
+                    {
+                        "question": "She was an hour late, she didn't apologise",
+                        "answerOptions": [
+                            { "text": "Even though", "rationale": "'Even though' is a conjunction used to show a surprising contrast.", "isCorrect": true },
+                            { "text": "Because", "rationale": "'Because' shows a cause, not a contrast.", "isCorrect": false },
+                            { "text": "However", "rationale": "'However' is an adverb and needs to be placed at the beginning of a new sentence or with semicolons.", "isCorrect": false },
+                            { "text": "In spite of", "rationale": "'In spite of' is a preposition and needs to be followed by a noun or gerund.", "isCorrect": false }
+                        ],
+                        "hint": "The relationship between the two clauses is one of surprising contrast."
+                    },
+                    {
+                        "question": "your car? It's in the car park",
+                        "answerOptions": [
+                            { "text": "Which is", "rationale": "'Which' is used for a choice or as a relative pronoun.", "isCorrect": false },
+                            { "text": "Where's", "rationale": "'Where's' is a contraction for 'where is' and correctly asks about location.", "isCorrect": true },
+                            { "text": "Who's", "rationale": "'Who's' asks about a person.", "isCorrect": false },
+                            { "text": "When's", "rationale": "'When's' asks about time.", "isCorrect": false }
+                        ],
+                        "hint": "The answer 'It's in the car park' indicates a location."
+                    },
+                    {
+                        "question": "They usually at home but today they lunch in a restaurant.",
+                        "answerOptions": [
+                            { "text": "are eating, are having", "rationale": "This is incorrect. The first verb should be present simple.", "isCorrect": false },
+                            { "text": "eat, are having", "rationale": "'Eat' is correct for the habitual action, and 'are having' is correct for the temporary action 'today'.", "isCorrect": true },
+                            { "text": "eat, have", "rationale": "The second verb should be present continuous to indicate a temporary action.", "isCorrect": false },
+                            { "text": "are eating, have", "rationale": "This is a mix of tenses that is not correct.", "isCorrect": false }
+                        ],
+                        "hint": "One verb describes a habit, and the other describes a temporary action."
+                    },
+                    {
+                        "question": "We didn't stay late --- we were very tired.",
+                        "answerOptions": [
+                            { "text": "Because", "rationale": "'Because' is the correct conjunction to show a reason.", "isCorrect": true },
+                            { "text": "That", "rationale": "This is not a correct conjunction here.", "isCorrect": false },
+                            { "text": "Until", "rationale": "'Until' shows a point in time.", "isCorrect": false },
+                            { "text": "So", "rationale": "'So' would introduce a result, which is the opposite of the intended meaning.", "isCorrect": false }
+                        ],
+                        "hint": "The second clause explains the reason for the first clause."
+                    },
+                    {
+                        "question": "You would have slept much better if you had taken your medicine.",
+                        "answerOptions": [
+                            { "text": "if you had taken your medicine", "rationale": "This is a correct third conditional sentence.", "isCorrect": true },
+                            { "text": "if you took your medicine", "rationale": "This is the second conditional, which is incorrect here.", "isCorrect": false },
+                            { "text": "if you will take your medicine", "rationale": "This is the first conditional, which is incorrect here.", "isCorrect": false },
+                            { "text": "if you take your medicine", "rationale": "This is the first conditional and is incorrect here.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about the third conditional. Remember the tense in the 'if' clause."
+                    },
+                    {
+                        "question": "I'd like a ------- of coffee, please",
+                        "answerOptions": [
+                            { "text": "Bottle", "rationale": "'Bottle' is for liquids like water or soda.", "isCorrect": false },
+                            { "text": "Plate", "rationale": "'Plate' is for food.", "isCorrect": false },
+                            { "text": "Cup", "rationale": "The standard container for coffee is a 'cup'.", "isCorrect": true },
+                            { "text": "Glass", "rationale": "'Glass' is for cold liquids.", "isCorrect": false }
+                        ],
+                        "hint": "This is a question about containers."
+                    },
+                    {
+                        "question": "It's very ----in here. I can't hear anything.",
+                        "answerOptions": [
+                            { "text": "noisy", "rationale": "The inability to hear anything implies a lot of noise.", "isCorrect": true },
+                            { "text": "clean", "rationale": "Clean is not related to sound.", "isCorrect": false },
+                            { "text": "quiet", "rationale": "'Quiet' is the opposite of 'noisy'.", "isCorrect": false },
+                            { "text": "exciting", "rationale": "'Exciting' is not related to sound.", "isCorrect": false }
+                        ],
+                        "hint": "The second clause gives a strong clue about the first."
+                    },
+                    {
+                        "question": "The religious wedding takes place in -church.",
+                        "answerOptions": [
+                            { "text": "engagement", "rationale": "Engagement is before the wedding.", "isCorrect": false },
+                            { "text": "performance", "rationale": "Performance is not the correct word here.", "isCorrect": false },
+                            { "text": "ceremony", "rationale": "'Ceremony' is the correct word for the ritual of a wedding.", "isCorrect": true },
+                            { "text": "marriage", "rationale": "'Marriage' is the state of being married, not the event.", "isCorrect": false }
+                        ],
+                        "hint": "The word you are looking for refers to the official ritual of a wedding."
+                    },
+                    {
+                        "question": "He's --------- the newspaper.",
+                        "answerOptions": [
+                            { "text": "Listening", "rationale": "'Listen' is for sound.", "isCorrect": false },
+                            { "text": "Reading", "rationale": "'Reading' is the correct verb for a newspaper.", "isCorrect": true },
+                            { "text": "Seeing", "rationale": "'See' is a general verb for vision.", "isCorrect": false },
+                            { "text": "Watching", "rationale": "'Watching' is for things in motion, like a movie or TV.", "isCorrect": false }
+                        ],
+                        "hint": "Think about the verb associated with a newspaper."
+                    },
+                    {
+                        "question": "Can I have of these kiwis?",
+                        "answerOptions": [
+                            { "text": "any", "rationale": "'Any' is typically used in questions or negative sentences.", "isCorrect": true },
+                            { "text": "Some", "rationale": "'Some' is used in affirmative sentences and polite questions or requests.", "isCorrect": false },
+                            { "text": "some of", "rationale": "'Some of' is used with a plural noun.", "isCorrect": false },
+                            { "text": "any of", "rationale": "'Any of' is used with a plural noun.", "isCorrect": false }
+                        ],
+                        "hint": "The word you are looking for is a determiner."
+                    },
+                    {
+                        "question": "Peter works in a shop, but he work in an office",
+                        "answerOptions": [
+                            { "text": "Don't", "rationale": "'Don't' is for 'I, you, we, they'.", "isCorrect": false },
+                            { "text": "Doesn't", "rationale": "'Doesn't' is for 'he, she, it'.", "isCorrect": false },
+                            { "text": "Didn't", "rationale": "The word 'but' indicates a past contrast.", "isCorrect": true },
+                            { "text": "doesn't work", "rationale": "While grammatically correct, it is not an option.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'but' indicates a contrast."
+                    },
+                    {
+                        "question": "What was the like in Vienna? It was cold and cloudy.",
+                        "answerOptions": [
+                            { "text": "Cold", "rationale": "'Cold' is an adjective.", "isCorrect": false },
+                            { "text": "Weather", "rationale": "The answer 'cold and cloudy' is a description of the weather.", "isCorrect": true },
+                            { "text": "Temperature", "rationale": "'Temperature' is a specific measurement, not a general description of weather.", "isCorrect": false },
+                            { "text": "Time", "rationale": "'Time' is not related to the answer.", "isCorrect": false }
+                        ],
+                        "hint": "The answer describes atmospheric conditions."
+                    },
+                    {
+                        "question": "volunteers asked to work in a poor foreign country.",
+                        "answerOptions": [
+                            { "text": "Sending", "rationale": "This is a gerund, which is not correct here.", "isCorrect": false },
+                            { "text": "To be sent", "rationale": "The volunteers are the ones being sent, so the passive infinitive 'to be sent' is correct.", "isCorrect": true },
+                            { "text": "To send", "rationale": "This would mean the volunteers are doing the sending, which is incorrect.", "isCorrect": false },
+                            { "text": "sent", "rationale": "This is past tense, which is incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The sentence is in the passive voice."
+                    },
+                    {
+                        "question": "Salim dogs.",
+                        "answerOptions": [
+                            { "text": "love", "rationale": "'Love' is incorrect for the subject 'Salim'.", "isCorrect": false },
+                            { "text": "loves", "rationale": "'Loves' is the correct present simple form for the subject 'Salim'.", "isCorrect": true },
+                            { "text": "was loving", "rationale": "'Was loving' implies a temporary action in the past, which is not correct for this sentence.", "isCorrect": false },
+                            { "text": "is loving", "rationale": "'Is loving' is the present continuous, which is incorrect here.", "isCorrect": false }
+                        ],
+                        "hint": "The subject 'Salim' is third-person singular."
+                    },
+                    {
+                        "question": "Where you yesterday?",
+                        "answerOptions": [
+                            { "text": "you was", "rationale": "'Was' is incorrect for the subject 'you'.", "isCorrect": false },
+                            { "text": "are you", "rationale": "This is present tense, which is incorrect with 'yesterday'.", "isCorrect": false },
+                            { "text": "were you", "rationale": "This is the correct past tense form for the subject 'you'.", "isCorrect": true },
+                            { "text": "did you were", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'yesterday' indicates the past tense."
+                    },
+                    {
+                        "question": "I have an appointment with the doctor tomorrow.",
+                        "answerOptions": [
+                            { "text": "is", "rationale": "This is incorrect.", "isCorrect": false },
+                            { "text": "at", "rationale": "'At' is for a specific time.", "isCorrect": false },
+                            { "text": "on", "rationale": "'On' is for a specific day.", "isCorrect": false },
+                            { "text": "none of the above", "rationale": "The sentence is grammatically correct as is and does not need a preposition.", "isCorrect": true }
+                        ],
+                        "hint": "The sentence is a complete thought without any additional prepositions."
+                    },
+                    {
+                        "question": "his parents allow him or not, john intends to go to the party.",
+                        "answerOptions": [
+                            { "text": "Whether", "rationale": "'Whether' is a conjunction used to introduce an indirect question, which fits this context.", "isCorrect": true },
+                            { "text": "While", "rationale": "'While' is used for time.", "isCorrect": false },
+                            { "text": "Although", "rationale": "While 'although' shows contrast, 'whether' fits the 'or not' structure better.", "isCorrect": false },
+                            { "text": "Despite", "rationale": "'Despite' is a preposition and must be followed by a noun or gerund.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'or not' is a strong clue."
+                    },
+                    {
+                        "question": "You put makeup in school.",
+                        "answerOptions": [
+                            { "text": "don't have to", "rationale": "This indicates a lack of obligation.", "isCorrect": false },
+                            { "text": "musn't", "rationale": "This indicates a prohibition, which is appropriate for a rule.", "isCorrect": true },
+                            { "text": "haven't", "rationale": "'Haven't' is an auxiliary verb and is not correct here.", "isCorrect": false },
+                            { "text": "have to", "rationale": "'Have to' indicates an obligation, which is the opposite of the intended meaning.", "isCorrect": false }
+                        ],
+                        "hint": "The sentence implies a rule against wearing makeup."
+                    },
+                    {
+                        "question": "Put these papers in a cupboard, or you wis.",
+                        "answerOptions": [
+                            { "text": "whoever", "rationale": "'Whoever' is a pronoun for a person.", "isCorrect": false },
+                            { "text": "wherever", "rationale": "'Wherever' means 'in whatever place'.", "isCorrect": true },
+                            { "text": "whatever", "rationale": "'Whatever' means 'anything'.", "isCorrect": false },
+                            { "text": "whichever", "rationale": "'Whichever' is used for a choice between two or more things.", "isCorrect": false }
+                        ],
+                        "hint": "The word you are looking for refers to a place."
+                    },
+                    {
+                        "question": "I will to Jordan.",
+                        "answerOptions": [
+                            { "text": "went", "rationale": "This is the past tense.", "isCorrect": false },
+                            { "text": "go", "rationale": "The verb 'will' is followed by the base form of the main verb.", "isCorrect": true },
+                            { "text": "not", "rationale": "This is an adverb.", "isCorrect": false },
+                            { "text": "gone", "rationale": "This is the past participle.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'will' is a modal verb that is followed by the base form of the verb."
+                    },
+                    {
+                        "question": "'Criterion' is:",
+                        "answerOptions": [
+                            { "text": "A standard to be judged", "rationale": "A criterion is a principle or standard by which something may be judged.", "isCorrect": true },
+                            { "text": "A small opening in a wall", "rationale": "This is not the meaning.", "isCorrect": false },
+                            { "text": "Characterized by curved lines", "rationale": "This is not the meaning.", "isCorrect": false },
+                            { "text": "A style of art portrayed by geometric forms", "rationale": "This is not the meaning.", "isCorrect": false }
+                        ],
+                        "hint": "This is a vocabulary question."
+                    },
+                    {
+                        "question": "I'm sure you enjoy the party tomorrow.",
+                        "answerOptions": [
+                            { "text": "will", "rationale": "'Will' is used to express a future prediction.", "isCorrect": true },
+                            { "text": "are", "rationale": "This is not correct.", "isCorrect": false },
+                            { "text": "are going to", "rationale": "While 'are going to' is also a future tense, 'will' is better for predictions.", "isCorrect": false },
+                            { "text": "will be", "rationale": "This is future continuous, which is incorrect here.", "isCorrect": false }
+                        ],
+                        "hint": "The word 'tomorrow' indicates a future tense."
+                    },
+                    {
+                        "question": "If you heat ice, it",
+                        "answerOptions": [
+                            { "text": "is going to be melt", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "melted", "rationale": "This is past tense.", "isCorrect": false },
+                            { "text": "melts", "rationale": "This is a zero conditional sentence, which is used for facts, and the verb should be in the present simple.", "isCorrect": true },
+                            { "text": "will be melt", "rationale": "This is grammatically incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "This is a zero conditional sentence used for scientific facts."
+                    },
+                    {
+                        "question": "When yesterday morning?",
+                        "answerOptions": [
+                            { "text": "you got up", "rationale": "This is a statement, not a question.", "isCorrect": false },
+                            { "text": "were you getting up", "rationale": "This is a continuous tense.", "isCorrect": false },
+                            { "text": "do you get up", "rationale": "This is present tense.", "isCorrect": false },
+                            { "text": "did you get up", "rationale": "The auxiliary verb 'did' is used for past simple questions.", "isCorrect": true }
+                        ],
+                        "hint": "The phrase 'yesterday morning' indicates the simple past tense."
+                    },
+                    {
+                        "question": "We all forward to your next visit.",
+                        "answerOptions": [
+                            { "text": "make", "rationale": "This is not the correct phrasal verb.", "isCorrect": false },
+                            { "text": "come", "rationale": "This is not the correct phrasal verb.", "isCorrect": false },
+                            { "text": "look", "rationale": "'Look forward to' is the correct phrasal verb.", "isCorrect": true },
+                            { "text": "recover", "rationale": "This is not the correct phrasal verb.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common phrasal verb."
+                    },
+                    {
+                        "question": "The travelers during the fight.",
+                        "answerOptions": [
+                            { "text": "were sleep", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "are sleep", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "sleeping", "rationale": "This is a participle and cannot stand alone.", "isCorrect": false },
+                            { "text": "were sleeping", "rationale": "This is the correct past continuous form to describe an action in progress in the past.", "isCorrect": true }
+                        ],
+                        "hint": "The word 'during' indicates a continuous action."
+                    },
+                    {
+                        "question": "Teachers don't like students who speak",
+                        "answerOptions": [
+                            { "text": "loudly", "rationale": "'Loudly' is the adverb that correctly modifies the verb 'speak'.", "isCorrect": true },
+                            { "text": "loud", "rationale": "'Loud' is an adjective.", "isCorrect": false },
+                            { "text": "aloud", "rationale": "'Aloud' means audibly.", "isCorrect": false },
+                            { "text": "Louder", "rationale": "'Louder' is a comparative adjective.", "isCorrect": false }
+                        ],
+                        "hint": "You need an adverb to describe how they speak."
+                    },
+                    {
+                        "question": "This stove works very",
+                        "answerOptions": [
+                            { "text": "will", "rationale": "This is a modal verb.", "isCorrect": false },
+                            { "text": "good", "rationale": "This is an adjective. The adverb 'well' should be used.", "isCorrect": false },
+                            { "text": "better", "rationale": "This is a comparative adverb.", "isCorrect": false },
+                            { "text": "well", "rationale": "'Well' is the correct adverb to describe the verb 'works'.", "isCorrect": true }
+                        ],
+                        "hint": "The word must be an adverb to describe the verb 'works'."
+                    },
+                    {
+                        "question": "The only thing I forgot to put in my case was the camera. Is same as:",
+                        "answerOptions": [
+                            { "text": "I didn't forget to put the camera in my case.", "rationale": "This is the opposite of the original sentence.", "isCorrect": false },
+                            { "text": "I remembered to put everything in my case except the camera.", "rationale": "This sentence has the same meaning as the original.", "isCorrect": true },
+                            { "text": "In my case I put only my camera but not the other things", "rationale": "This is the opposite of the original sentence.", "isCorrect": false },
+                            { "text": "I put everything in my case including the camera", "rationale": "This is the opposite of the original sentence.", "isCorrect": false }
+                        ],
+                        "hint": "Look for the sentence that expresses the same idea in a different way."
+                    },
+                    {
+                        "question": "The bookshop next to the town hall.",
+                        "answerOptions": [
+                            { "text": "is put", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "has the post", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "position", "rationale": "This is a noun.", "isCorrect": false },
+                            { "text": "is located", "rationale": "This is the correct phrase to express a location.", "isCorrect": true }
+                        ],
+                        "hint": "Think about the verb phrase used to describe a location."
+                    },
+                    {
+                        "question": "I told mom we'd be home an hour or so.",
+                        "answerOptions": [
+                            { "text": "in", "rationale": "'In' is the correct preposition to describe a future time period.", "isCorrect": true },
+                            { "text": "on", "rationale": "'On' is used for days.", "isCorrect": false },
+                            { "text": "at", "rationale": "'At' is used for specific times.", "isCorrect": false },
+                            { "text": "None of the above", "rationale": "The correct answer is 'in'.", "isCorrect": false }
+                        ],
+                        "hint": "The preposition should indicate a period of time in the future."
+                    },
+                    {
+                        "question": "If I had lived in Turkey, I Turkish.",
+                        "answerOptions": [
+                            { "text": "will be learning", "rationale": "This is future continuous, which is incorrect here.", "isCorrect": false },
+                            { "text": "would have learnt", "rationale": "This is the correct third conditional form.", "isCorrect": true },
+                            { "text": "am going to learn", "rationale": "This is a future tense, which is incorrect here.", "isCorrect": false },
+                            { "text": "have to learn", "rationale": "This is an obligation, which is incorrect here.", "isCorrect": false }
+                        ],
+                        "hint": "This is a third conditional sentence about a hypothetical past situation."
+                    },
+                    {
+                        "question": "A drill is a tool that drills rocks.",
+                        "answerOptions": [
+                            { "text": "through", "rationale": "'Through' is the correct preposition to describe drilling from one side to the other.", "isCorrect": true },
+                            { "text": "during", "rationale": "'During' is for a period of time.", "isCorrect": false },
+                            { "text": "next to", "rationale": "'Next to' is for location.", "isCorrect": false },
+                            { "text": "on", "rationale": "'On' is for a surface.", "isCorrect": false }
+                        ],
+                        "hint": "The preposition should describe the action of drilling."
+                    },
+                    {
+                        "question": "If we are in town we go to the cinema.",
+                        "answerOptions": [
+                            { "text": "should too", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "might as well", "rationale": "'Might as well' is the correct idiom to suggest an action since there is no better alternative.", "isCorrect": true },
+                            { "text": "do have to", "rationale": "'Do have to' is for emphasis, which is incorrect here.", "isCorrect": false },
+                            { "text": "used to", "rationale": "'Used to' is for a past habit.", "isCorrect": false }
+                        ],
+                        "hint": "This is a common idiom."
+                    },
+                    {
+                        "question": "We chess right now.",
+                        "answerOptions": [
+                            { "text": "were playing", "rationale": "This is past continuous.", "isCorrect": false },
+                            { "text": "played", "rationale": "This is simple past.", "isCorrect": false },
+                            { "text": "are playing", "rationale": "'Right now' indicates a present continuous action.", "isCorrect": true },
+                            { "text": "playing", "rationale": "This is a participle and cannot stand alone.", "isCorrect": false }
+                        ],
+                        "hint": "The phrase 'right now' is a key indicator of the correct tense."
+                    },
+                    {
+                        "question": "You must boil those vegetables before in the stew.",
+                        "answerOptions": [
+                            { "text": "using them", "rationale": "The gerund 'using' correctly follows 'before', and 'them' refers to the vegetables.", "isCorrect": true },
+                            { "text": "their used", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "the use", "rationale": "This is a noun phrase and doesn't fit the context.", "isCorrect": false },
+                            { "text": "using", "rationale": "The verb form is correct, but it lacks the object 'them'.", "isCorrect": false }
+                        ],
+                        "hint": "The verb 'boil' and 'before' suggest a gerund phrase with an object."
+                    },
+                    {
+                        "question": "Mr. Salim has been to Mauritania recently,",
+                        "answerOptions": [
+                            { "text": "has he", "rationale": "This is a positive tag question, which is incorrect.", "isCorrect": false },
+                            { "text": "hasn't he", "rationale": "The verb in the main clause is positive, so the tag question must be negative.", "isCorrect": true },
+                            { "text": "isn't he", "rationale": "The auxiliary verb is 'has', not 'is'.", "isCorrect": false },
+                            { "text": "isn't she", "rationale": "The pronoun 'she' is incorrect.", "isCorrect": false }
+                        ],
+                        "hint": "The tag question must be the opposite of the main verb."
+                    },
+                    {
+                        "question": "Butter is from milk.",
+                        "answerOptions": [
+                            { "text": "come", "rationale": "'Come' is not the correct verb.", "isCorrect": false },
+                            { "text": "done", "rationale": "'Done' is not the correct verb.", "isCorrect": false },
+                            { "text": "do", "rationale": "'Do' is not the correct verb.", "isCorrect": false },
+                            { "text": "made", "rationale": "'Made' is the correct past participle for a passive sentence about creation.", "isCorrect": true }
+                        ],
+                        "hint": "The sentence is in the passive voice. The verb should be in the past participle form."
+                    },
+                    {
+                        "question": "Can you help me? I a post office.",
+                        "answerOptions": [
+                            { "text": "am looking for", "rationale": "'Am looking for' is the correct present continuous form for an action in progress.", "isCorrect": true },
+                            { "text": "look for", "rationale": "This is present simple and incorrect for an ongoing action.", "isCorrect": false },
+                            { "text": "am look for", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "looking for", "rationale": "This is a participle and cannot stand alone.", "isCorrect": false }
+                        ],
+                        "hint": "The sentence implies a present, ongoing action."
+                    },
+                    {
+                        "question": "This field four meters.",
+                        "answerOptions": [
+                            { "text": "measures", "rationale": "'Measures' is the correct verb to describe the dimensions of something.", "isCorrect": true },
+                            { "text": "makes", "rationale": "'Makes' is a different verb.", "isCorrect": false },
+                            { "text": "takes", "rationale": "'Takes' is incorrect here.", "isCorrect": false },
+                            { "text": "costs", "rationale": "'Costs' is used for price.", "isCorrect": false }
+                        ],
+                        "hint": "The verb should describe the size of the field."
+                    },
+                    {
+                        "question": "When I told her I failed my exam she looked at me in total__?",
+                        "answerOptions": [
+                            { "text": "amazment", "rationale": "'Amazement' is a positive feeling.", "isCorrect": false },
+                            { "text": "disappointment", "rationale": "'Disappointment' is the correct emotion when someone fails an exam.", "isCorrect": true },
+                            { "text": "achievment", "rationale": "'Achievement' is a positive outcome.", "isCorrect": false },
+                            { "text": "replacement", "rationale": "'Replacement' is not an emotion.", "isCorrect": false }
+                        ],
+                        "hint": "The word you are looking for is an emotion related to failure."
+                    },
+                    {
+                        "question": "The first congress in 1776.",
+                        "answerOptions": [
+                            { "text": "was hold", "rationale": "This is grammatically incorrect.", "isCorrect": false },
+                            { "text": "were held", "rationale": "'Congress' is a singular noun.", "isCorrect": false },
+                            { "text": "took place", "rationale": "'Took place' is a correct idiom for an event occurring.", "isCorrect": true },
+                            { "text": "took over", "rationale": "This means to take control.", "isCorrect": false }
+                        ],
+                        "hint": "The verb should describe an event happening at a specific time in the past."
+                    }
+                ]
+            };
+
+            let currentQuestionIndex = 0;
+            let score = 0;
+
+            function showQuestion() {
+                if (currentQuestionIndex >= quizData.questions.length) {
+                    showFinalResult();
+                    return;
+                }
+
+                const questionData = quizData.questions[currentQuestionIndex];
+                questionArea.innerHTML = '';
+                feedbackArea.classList.add('hidden');
+
+                // Update question counter
+                questionCounter.textContent = `(${currentQuestionIndex + 1}/${quizData.questions.length})`;
+
+                // Create question text element
+                const questionTextElement = document.createElement('h2');
+                questionTextElement.className = 'text-xl font-bold text-gray-700 mb-4';
+                questionTextElement.textContent = questionData.question;
+                questionArea.appendChild(questionTextElement);
+
+                // Create and append hint element
+                const hintElement = document.createElement('p');
+                hintElement.className = 'text-gray-500 text-sm italic mb-4';
+                hintElement.textContent = `تلميح: ${questionData.hint}`;
+                questionArea.appendChild(hintElement);
+
+                // Create and append options buttons
+                questionData.answerOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'w-full text-right p-4 border border-gray-300 rounded-xl transition duration-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500';
+                    button.textContent = option.text;
+                    button.dataset.isCorrect = option.isCorrect;
+                    button.addEventListener('click', () => checkAnswer(button, questionData));
+                    questionArea.appendChild(button);
+                });
+            }
+
+            function checkAnswer(selectedButton, currentQuestion) {
+                const isCorrect = selectedButton.dataset.isCorrect === 'true';
+
+                // Disable all buttons to prevent double-clicking
+                document.querySelectorAll('#question-area button').forEach(button => {
+                    button.disabled = true;
+                });
+
+                // Update score and show feedback
+                if (isCorrect) {
+                    score++;
+                    feedbackBox.className = 'bg-green-100 text-green-700 p-4 rounded-lg font-semibold';
+                    feedbackBox.textContent = 'إجابة صحيحة!';
+                    selectedButton.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                } else {
+                    feedbackBox.className = 'bg-red-100 text-red-700 p-4 rounded-lg font-semibold';
+                    feedbackBox.textContent = `إجابة خاطئة! (${currentQuestion.answerOptions.find(opt => opt.isCorrect).rationale})`;
+                    selectedButton.classList.add('bg-red-500', 'text-white', 'border-red-500');
+                    // Highlight the correct answer
+                    const correctButton = Array.from(document.querySelectorAll('#question-area button')).find(btn => btn.dataset.isCorrect === 'true');
+                    if (correctButton) {
+                        correctButton.classList.add('bg-green-500', 'text-white', 'border-green-500');
+                    }
+                }
+
+                feedbackArea.classList.remove('hidden');
+            }
+
+            nextButton.addEventListener('click', () => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizData.questions.length) {
+                    showQuestion();
+                } else {
+                    showFinalResult();
+                }
+            });
+
+            function showFinalResult() {
+                questionArea.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <h2 class="text-3xl font-bold text-gray-800">انتهى الاختبار!</h2>
+                        <p class="text-xl text-gray-600">
+                            لقد أكملت جميع الأسئلة.
+                        </p>
+                        <p class="text-2xl font-bold text-blue-600">
+                            درجتك النهائية: ${score} من ${quizData.questions.length}
+                        </p>
+                        <p class="text-md text-gray-500">
+                            أعد تحميل الصفحة لإعادة الاختبار.
+                        </p>
+                    </div>
+                `;
+                feedbackArea.classList.add('hidden');
+                questionCounter.textContent = '';
+            }
+
+            // Initial load
+            showQuestion();
+        });
+    </script>
+</body>
+
+</html>
